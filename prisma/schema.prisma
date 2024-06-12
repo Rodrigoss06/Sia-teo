@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MAE_Aportaciones {
+  PK_MAE_Aportaciones Int               @id(map: "mae_aportaciones_pkey") @default(autoincrement())
+  ESSALUD             Decimal?          @db.Decimal
+  SCTR                Decimal?          @db.Decimal
+  TRS_Boleta_Pago     TRS_Boleta_Pago[]
+}
+
+model MAE_Descuentos {
+  PK_MAE_Descuentos      Int               @id(map: "mae_descuentos_pkey") @default(autoincrement())
+  AFP_FONDO              Decimal?          @db.Decimal
+  AFP_COMISION           Decimal?          @db.Decimal
+  AFP_SEGURO             Decimal?          @db.Decimal
+  ONP                    Decimal?          @db.Decimal
+  FALTAS                 Decimal?          @db.Decimal
+  RETENCIONES_JUDICIALES Decimal?          @db.Decimal
+  ADELANTOS              Decimal?          @db.Decimal
+  TOTAL_DESCUENTOS       Decimal?          @db.Decimal
+  TRS_Boleta_Pago        TRS_Boleta_Pago[]
+}
+
+model MAE_Horario_Laborado {
+  PK_MAE_Horario_Laborado Int               @id(map: "mae_horario_laborado_pkey") @default(autoincrement())
+  MES                     Int?
+  DIAS_LABORADOS          Int?
+  HORAS_LABORADAS         Int?
+  DIAS_NO_LABORADOS       Int?
+  HORAS_EXTRA             Int?
+  TRS_Boleta_Pago         TRS_Boleta_Pago[]
+}
+
+model MAE_Remuneraciones {
+  PK_MAE_Remuneraciones   Int               @id(map: "mae_remuneraciones_pkey") @default(autoincrement())
+  SUELDO_COMPUTABLE       Decimal?          @db.Decimal
+  REMUNERACION_VACACIONAL Decimal?          @db.Decimal
+  MOVILIDAD_SUPLEMENTOS   Decimal?          @db.Decimal
+  CTS                     Decimal?          @db.Decimal
+  TOTAL_REMUNERACIONES    Decimal?          @db.Decimal
+  TRS_Boleta_Pago         TRS_Boleta_Pago[]
+}
+
+model MAE_Trabajadores {
+  PK_MAE_Trabajador Int               @id(map: "mae_trabajadores_pkey") @default(autoincrement())
+  DNI               String?           @db.VarChar(8)
+  NOMBRE            String?           @db.VarChar(100)
+  APELLIDO          String?           @db.VarChar(100)
+  FECHA_NACIMIENTO  DateTime?         @db.Date
+  DIRECCION         String?           @db.VarChar(200)
+  TRS_Boleta_Pago   TRS_Boleta_Pago[]
+}
+
+model TRS_Boleta_Pago {
+  PK_TRS_Boleta_Pago    Int                   @id(map: "trs_boleta_pago_pkey") @default(autoincrement())
+  PAGO_TOTAL            Decimal?              @db.Decimal
+  FECHA                 DateTime?             @db.Date
+  FK_MAE_Trabajador     Int?
+  FK_MAE_Horario        Int?
+  FK_MAE_Aportaciones   Int?
+  FK_MAE_Remuneraciones Int?
+  FK_MAE_Descuentos     Int?
+  MAE_Aportaciones      MAE_Aportaciones?     @relation(fields: [FK_MAE_Aportaciones], references: [PK_MAE_Aportaciones], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_aportaciones_fkey")
+  MAE_Descuentos        MAE_Descuentos?       @relation(fields: [FK_MAE_Descuentos], references: [PK_MAE_Descuentos], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_descuentos_fkey")
+  MAE_Horario_Laborado  MAE_Horario_Laborado? @relation(fields: [FK_MAE_Horario], references: [PK_MAE_Horario_Laborado], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_horario_fkey")
+  MAE_Remuneraciones    MAE_Remuneraciones?   @relation(fields: [FK_MAE_Remuneraciones], references: [PK_MAE_Remuneraciones], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_remuneraciones_fkey")
+  MAE_Trabajadores      MAE_Trabajadores?     @relation(fields: [FK_MAE_Trabajador], references: [PK_MAE_Trabajador], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_trabajador_fkey")
+}
