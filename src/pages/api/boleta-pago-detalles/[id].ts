@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { MAE_Remuneraciones } from "@prisma/client";
+import { TRS_Boleta_Pago_Detalle } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   error?: string;
   message?: string;
-  remuneraciones?: MAE_Remuneraciones
+  boleta_pago?: TRS_Boleta_Pago_Detalle
 };
 
 export default async function handler(
@@ -16,11 +16,11 @@ export default async function handler(
         console.log(req.query)
         const { id } = req.query
         console.log(id)
-        const remuneraciones = await prisma.mAE_Remuneraciones.findFirst({where:{
-            ID_REMUNERACIONES: Number(id)
+        const boleta_pago = await prisma.tRS_Boleta_Pago_Detalle.findFirst({where:{
+            ID_BOLETA_PAGO_DETALLE: Number(id)
         }})
-        console.log(remuneraciones)
-        res.status(200).json({message:"get remuneraciones", remuneraciones:remuneraciones!})
+        console.log(boleta_pago)
+        res.status(200).json({message:"get boleta_pago", boleta_pago:boleta_pago!})
 
     }
 }

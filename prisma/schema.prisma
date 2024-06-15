@@ -7,68 +7,94 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model MAE_Aportaciones {
-  PK_MAE_Aportaciones Int               @id(map: "mae_aportaciones_pkey") @default(autoincrement())
-  ESSALUD             Decimal?          @db.Decimal
-  SCTR                Decimal?          @db.Decimal
-  TRS_Boleta_Pago     TRS_Boleta_Pago[]
-}
-
 model MAE_Descuentos {
-  PK_MAE_Descuentos      Int               @id(map: "mae_descuentos_pkey") @default(autoincrement())
-  AFP_FONDO              Decimal?          @db.Decimal
-  AFP_COMISION           Decimal?          @db.Decimal
-  AFP_SEGURO             Decimal?          @db.Decimal
-  ONP                    Decimal?          @db.Decimal
-  FALTAS                 Decimal?          @db.Decimal
-  RETENCIONES_JUDICIALES Decimal?          @db.Decimal
-  ADELANTOS              Decimal?          @db.Decimal
-  TOTAL_DESCUENTOS       Decimal?          @db.Decimal
-  TRS_Boleta_Pago        TRS_Boleta_Pago[]
+  ID_DESCUENTO   Int              @id(map: "MAE_DESCUENTOS_pkey") @default(autoincrement())
+  DESCRIPCION    String?          @db.VarChar(100)
+  MONTO          Decimal?         @db.Decimal
+  PORCENTAJE     Int?
+  TRS_Descuentos TRS_Descuentos[]
 }
 
-model MAE_Horario_Laborado {
-  PK_MAE_Horario_Laborado Int               @id(map: "mae_horario_laborado_pkey") @default(autoincrement())
-  MES                     Int?
-  DIAS_LABORADOS          Int?
-  HORAS_LABORADAS         Int?
-  DIAS_NO_LABORADOS       Int?
-  HORAS_EXTRA             Int?
-  TRS_Boleta_Pago         TRS_Boleta_Pago[]
+model MAE_Empleado {
+  ID_EMPLEADO        Int                 @id(map: "MAE_EMPLEADO_pkey") @default(autoincrement())
+  ID_TIPO            Int?
+  NOMBRE             String?             @db.VarChar(100)
+  APELLIDO           String?             @db.VarChar(100)
+  FECHA_NACIMIENTO   DateTime?           @db.Date
+  HIJOS              String?             @db.VarChar(3)
+  DIRECCION          String?             @db.VarChar(200)
+  ID_EMPRESA         String?             @db.VarChar(20)
+  MAE_Empresa        MAE_Empresa?        @relation(fields: [ID_EMPRESA], references: [ID_EMPRESA], onDelete: NoAction, onUpdate: NoAction, map: "MAE_EMPLEADO_ID_EMPRESA_fkey")
+  MAE_Tipo_Documento MAE_Tipo_Documento? @relation(fields: [ID_TIPO], references: [ID_TIPO], onDelete: NoAction, onUpdate: NoAction, map: "MAE_EMPLEADO_ID_TIPO_fkey")
+  TRS_Boleta_Pago    TRS_Boleta_Pago[]
+}
+
+model MAE_Empresa {
+  ID_EMPRESA    String         @id(map: "MAE_EMPRESA_pkey") @db.VarChar(20)
+  RAZON_SOCIAL  String?        @db.VarChar(100)
+  RUBRO_EMPRESA String?        @db.VarChar(100)
+  DIRECCION     String?        @db.VarChar(200)
+  RUC           String?        @db.VarChar(11)
+  MAE_Empleado  MAE_Empleado[]
 }
 
 model MAE_Remuneraciones {
-  PK_MAE_Remuneraciones   Int               @id(map: "mae_remuneraciones_pkey") @default(autoincrement())
-  SUELDO_COMPUTABLE       Decimal?          @db.Decimal
-  REMUNERACION_VACACIONAL Decimal?          @db.Decimal
-  MOVILIDAD_SUPLEMENTOS   Decimal?          @db.Decimal
-  CTS                     Decimal?          @db.Decimal
-  TOTAL_REMUNERACIONES    Decimal?          @db.Decimal
-  TRS_Boleta_Pago         TRS_Boleta_Pago[]
+  ID_REMUNERACIONES  Int                  @id(map: "MAE_REMUNERACIONES_pkey") @default(autoincrement())
+  DESCRIPCION        String?              @db.VarChar(100)
+  MONTO              Decimal?             @db.Decimal
+  TRS_Remuneraciones TRS_Remuneraciones[]
 }
 
-model MAE_Trabajadores {
-  PK_MAE_Trabajador Int               @id(map: "mae_trabajadores_pkey") @default(autoincrement())
-  DNI               String?           @db.VarChar(8)
-  NOMBRE            String?           @db.VarChar(100)
-  APELLIDO          String?           @db.VarChar(100)
-  FECHA_NACIMIENTO  DateTime?         @db.Date
-  DIRECCION         String?           @db.VarChar(200)
-  TRS_Boleta_Pago   TRS_Boleta_Pago[]
+model MAE_Tipo_Documento {
+  ID_TIPO      Int            @id(map: "MAE_TIPO_DOCUMENTO_pkey") @default(autoincrement())
+  DESCRIPCION  String?        @db.VarChar(100)
+  MAE_Empleado MAE_Empleado[]
+}
+
+model TRS_Aportaciones {
+  ID_APORTACIONES         Int                       @id(map: "TRS_APORTACIONES_pkey") @default(autoincrement())
+  ESSALUD                 Decimal?                  @db.Decimal
+  SCTR                    Decimal?                  @db.Decimal
+  TRS_Boleta_Pago_Detalle TRS_Boleta_Pago_Detalle[]
 }
 
 model TRS_Boleta_Pago {
-  PK_TRS_Boleta_Pago    Int                   @id(map: "trs_boleta_pago_pkey") @default(autoincrement())
-  PAGO_TOTAL            Decimal?              @db.Decimal
-  FECHA                 DateTime?             @db.Date
-  FK_MAE_Trabajador     Int?
-  FK_MAE_Horario        Int?
-  FK_MAE_Aportaciones   Int?
-  FK_MAE_Remuneraciones Int?
-  FK_MAE_Descuentos     Int?
-  MAE_Aportaciones      MAE_Aportaciones?     @relation(fields: [FK_MAE_Aportaciones], references: [PK_MAE_Aportaciones], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_aportaciones_fkey")
-  MAE_Descuentos        MAE_Descuentos?       @relation(fields: [FK_MAE_Descuentos], references: [PK_MAE_Descuentos], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_descuentos_fkey")
-  MAE_Horario_Laborado  MAE_Horario_Laborado? @relation(fields: [FK_MAE_Horario], references: [PK_MAE_Horario_Laborado], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_horario_fkey")
-  MAE_Remuneraciones    MAE_Remuneraciones?   @relation(fields: [FK_MAE_Remuneraciones], references: [PK_MAE_Remuneraciones], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_remuneraciones_fkey")
-  MAE_Trabajadores      MAE_Trabajadores?     @relation(fields: [FK_MAE_Trabajador], references: [PK_MAE_Trabajador], onDelete: NoAction, onUpdate: NoAction, map: "trs_boleta_pago_fk_mae_trabajador_fkey")
+  ID_BOLETA_PAGO          Int                      @id(map: "TRS_BOLETA_PAGO_pkey") @default(autoincrement())
+  FECHA                   DateTime?                @db.Date
+  ID_EMPLEADO             Int?
+  DIAS_LABORADOS          Int?
+  TOTAL_HORAS_LABORADAS   Decimal?                 @db.Decimal
+  HORAS_EXTRAS            Decimal?                 @db.Decimal
+  DIAS_NO_LABORADOS       Int?
+  NETO_PAGAR              Decimal?                 @db.Decimal
+  ID_BOLETA_PAGO_DETALLES Int?
+  TRS_Boleta_Pago_Detalle TRS_Boleta_Pago_Detalle? @relation(fields: [ID_BOLETA_PAGO_DETALLES], references: [ID_BOLETA_PAGO_DETALLE], onDelete: NoAction, onUpdate: NoAction, map: "TRS_BOLETA_PAGO_ID_BOLETA_PAGO_DETALLES_fkey")
+  MAE_Empleado            MAE_Empleado?            @relation(fields: [ID_EMPLEADO], references: [ID_EMPLEADO], onDelete: NoAction, onUpdate: NoAction, map: "TRS_BOLETA_PAGO_ID_EMPLEADO_fkey")
+}
+
+model TRS_Boleta_Pago_Detalle {
+  ID_BOLETA_PAGO_DETALLE        Int                 @id(map: "TRS_BOLETA_PAGO_DETALLE_pkey") @default(autoincrement())
+  ID_DESCUENTO_TRANSACCIONAL    Int?
+  ID_REMUNERACION_TRANSACCIONAL Int?
+  ID_APORTACIONES_TRANSACCIONAL Int?
+  TRS_Boleta_Pago               TRS_Boleta_Pago[]
+  TRS_Aportaciones              TRS_Aportaciones?   @relation(fields: [ID_APORTACIONES_TRANSACCIONAL], references: [ID_APORTACIONES], onDelete: NoAction, onUpdate: NoAction, map: "TRS_BOLETA_PAGO_DETALLE_ID_APORTACIONES_TRANSACCIONAL_fkey")
+  TRS_Descuentos                TRS_Descuentos?     @relation(fields: [ID_DESCUENTO_TRANSACCIONAL], references: [ID_DESCUENTO_TRANSACCIONAL], onDelete: NoAction, onUpdate: NoAction, map: "TRS_BOLETA_PAGO_DETALLE_ID_DESCUENTO_TRANSACCIONAL_fkey")
+  TRS_Remuneraciones            TRS_Remuneraciones? @relation(fields: [ID_REMUNERACION_TRANSACCIONAL], references: [ID_REMUNERACION_TRANSACCIONAL], onDelete: NoAction, onUpdate: NoAction, map: "TRS_BOLETA_PAGO_DETALLE_ID_REMUNERACION_TRANSACCIONAL_fkey")
+}
+
+model TRS_Descuentos {
+  ID_DESCUENTO_TRANSACCIONAL Int                       @id(map: "TRS_DESCUENTOS_pkey") @default(autoincrement())
+  ID_DESCUENTO               Int?
+  TOTAL                      Decimal?                  @db.Decimal
+  TRS_Boleta_Pago_Detalle    TRS_Boleta_Pago_Detalle[]
+  MAE_Descuentos             MAE_Descuentos?           @relation(fields: [ID_DESCUENTO], references: [ID_DESCUENTO], onDelete: NoAction, onUpdate: NoAction, map: "TRS_DESCUENTOS_ID_DESCUENTO_fkey")
+}
+
+model TRS_Remuneraciones {
+  ID_REMUNERACION_TRANSACCIONAL Int                       @id(map: "TRS_REMUNERACIONES_pkey") @default(autoincrement())
+  ID_REMUNERACIONES             Int?
+  TOTAL                         Decimal?                  @db.Decimal
+  TRS_Boleta_Pago_Detalle       TRS_Boleta_Pago_Detalle[]
+  MAE_Remuneraciones            MAE_Remuneraciones?       @relation(fields: [ID_REMUNERACIONES], references: [ID_REMUNERACIONES], onDelete: NoAction, onUpdate: NoAction, map: "TRS_REMUNERACIONES_ID_REMUNERACIONES_fkey")
 }

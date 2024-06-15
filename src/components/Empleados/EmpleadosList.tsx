@@ -35,7 +35,7 @@ function EmpleadosList() {
           <p>Opciones</p>
         </span>
       {empleados.map((empleado: MAE_Trabajadores) => (
-        <EmpleadoItem empleado={empleado} key={empleado.PK_MAE_Trabajador} />
+        <EmpleadoItem empleado={empleado} key={empleado.ID_EMPLEADO} />
       ))}
       </section>
       <ModalAgregarEmpleado show={showModal} onClose={()=>setShowModal(!showModal)}>

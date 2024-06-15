@@ -28,12 +28,12 @@ export default async function handler(
         case "POST":
             try {
                 console.log(3)
-                console.log(req.body.newAportacion)
-                const aportacion = JSON.parse(req.body.newAportacion)
+                console.log(req.body.data)
+                const aportacion = JSON.parse(req.body.data)
                 console.log(aportacion)
                 const newAportacion = await prisma.mAE_Aportaciones.create({data:aportacion})
                 console.log(newAportacion)
-                res.status(200).json({message:"POST aportaciones"})
+                res.status(200).json({message:"POST aportaciones",aportacion:newAportacion})
             } catch (error) {
                 console.log(error)
                 res.status(500).json({error:"Error fetching aportaciones"})

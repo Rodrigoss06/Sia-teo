@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { TRS_Remuneraciones } from "@prisma/client";
+import { MAE_Remuneraciones } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   error?: string;
   message?: string;
-  remuneraciones?: TRS_Remuneraciones[],
-  remuneracion?:TRS_Remuneraciones
+  remuneraciones?: MAE_Remuneraciones[],
+  remuneracion?:MAE_Remuneraciones
 };
 
 export default async function handler(
@@ -17,7 +17,7 @@ export default async function handler(
     switch (req.method) {
         case "GET":
             try {
-                const remuneraciones:TRS_Remuneraciones[] = await prisma.tRS_Remuneraciones.findMany()
+                const remuneraciones:MAE_Remuneraciones[] = await prisma.mAE_Remuneraciones.findMany()
                 console.log(remuneraciones)
                 res.status(200).json({message:"get remuneraciones", remuneraciones:remuneraciones})
             } catch (error) {
@@ -31,7 +31,7 @@ export default async function handler(
                 console.log(req.body.data)
                 const remuneracion = JSON.parse(req.body.data)
                 console.log(remuneracion)
-                const newRemuneracion = await prisma.tRS_Remuneraciones.create({data:remuneracion})
+                const newRemuneracion = await prisma.mAE_Remuneraciones.create({data:remuneracion})
                 console.log(newRemuneracion)
                 res.status(200).json({message:"POST remuneraciones",remuneracion:newRemuneracion})
             } catch (error) {

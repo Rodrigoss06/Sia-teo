@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import {  TRS_Boleta_Pago } from "@prisma/client";
+import {  TRS_Boleta_Pago_Detalle } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   error?: string;
   message?: string;
-  boletas_pagos?: TRS_Boleta_Pago[];
-  boleta_pago?:TRS_Boleta_Pago
+  boletas_pagos?: TRS_Boleta_Pago_Detalle[];
+  boleta_pago?:TRS_Boleta_Pago_Detalle
 };
 
 export default async function handler(
@@ -17,7 +17,7 @@ export default async function handler(
     switch (req.method) {
         case "GET":
             try {
-                const boletas:TRS_Boleta_Pago[] = await prisma.tRS_Boleta_Pago.findMany()
+                const boletas:TRS_Boleta_Pago_Detalle[] = await prisma.tRS_Boleta_Pago_Detalle.findMany()
                 console.log(boletas)
                 res.status(200).json({message:"get boletas", boletas_pagos:boletas})
             } catch (error) {
@@ -31,7 +31,7 @@ export default async function handler(
                 console.log(req.body.data)
                 const newBoleta = JSON.parse(req.body.data)
                 console.log(newBoleta)
-                const newBoletaPago = await prisma.tRS_Boleta_Pago.create({data:newBoleta})
+                const newBoletaPago = await prisma.tRS_Boleta_Pago_Detalle.create({data:newBoleta})
                 console.log(newBoletaPago)
                 res.status(200).json({message:"POST boletas de pago", boleta_pago:newBoleta})
             } catch (error) {

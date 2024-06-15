@@ -1,17 +1,31 @@
+import useApi from "@/hooks/useApi";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function EmpleadoForm() {
-  const [newEmpleado, setNewEmpleado] = useState<Omit<MAE_Trabajadores, 'PK_MAE_Trabajador'>>({
-    DNI: "",
+  const { loading, getEmpresas, createHorarioLaborado, createRemuneracion, createDescuento, createAportacion, createBoletaPago } = useApi();
+
+  const [documento,setDocumento] = useState<Omit<MAE_Tipo_Documento, 'ID_TIPO'>>({
+    DESCRIPCION:""
+  })
+  const [empresas,setEmpresas] = useState<MAE_Empresa[]>([])
+  const [newEmpleado, setNewEmpleado] = useState<Omit<MAE_Empleado, 'ID_EMPLEADO'>>({
+    ID_TIPO: 0,
+    ID_EMPRESA: "",
     NOMBRE: "",
     APELLIDO: "",
     FECHA_NACIMIENTO: new Date(),
     DIRECCION: "",
+    HIJOS:""
   });
 
   const [error, setError] = useState<string | null>(null);
-
+  useEffect(()=>{
+    const getDataEmpresas = async()=>{
+      const data = await getEmpresas("http://localhost:3000/api")
+      setEmpresas(data.empresas)
+    }
+  },[])
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -20,13 +34,15 @@ function EmpleadoForm() {
       });
       console.log(response);
       setNewEmpleado({
-        DNI: "",
+        ID_TIPO: 0,
+        ID_EMPRESA: "",
         NOMBRE: "",
         APELLIDO: "",
         FECHA_NACIMIENTO: new Date(),
         DIRECCION: "",
+        HIJOS:""
       });
-      setError(null); // Limpiar el error después de un envío exitoso
+      setError(null);
     } catch (error) {
       console.error("Error fetching empleados");
       setError("Ocurrió un error al agregar el empleado.");
@@ -38,17 +54,28 @@ function EmpleadoForm() {
         <h1 className="text-white text-xl">Agregar Empleado</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
-      <input
-        className="p-2 rounded text-lg"
-        type="number"
-        minLength={8}
-        maxLength={8}
-        value={newEmpleado.DNI!}
-        placeholder="DNI"
+      <select
+        name="tipos_Documentos"
+        id="Tipos_Documentos"
+        className=" rounded text-lg grid col-span-2"
+        required
         onChange={(e) =>
-          setNewEmpleado((state) => ({ ...state, DNI: e.target.value }))
+          setNewEmpleado((state) => ({
+            ...state,
+            ID_TIPO: e.target.value,
+          }))
         }
-      />
+      >
+        <option value={""}></option>
+        {empresas?.map((empresa: MAE_Empresa) => (
+          <option
+            key={empresa.ID_EMPRESA}
+            value={empresa.ID_EMPRESA}
+          >
+            {empresa.RUC + " " + empresa.RUBRO_EMPRESA}
+          </option>
+        ))}
+      </select>
       <input
         className="p-2 rounded text-lg"
         type="text"
@@ -92,6 +119,28 @@ function EmpleadoForm() {
           setNewEmpleado((state) => ({ ...state, DIRECCION: e.target.value }))
         }
       />
+      <select
+        name="empresas"
+        id="Empresas"
+        className=" rounded text-lg grid col-span-2"
+        required
+        onChange={(e) =>
+          setNewEmpleado((state) => ({
+            ...state,
+            ID_EMPRESA: e.target.value,
+          }))
+        }
+      >
+        <option value={""}></option>
+        {empresas?.map((empresa: MAE_Empresa) => (
+          <option
+            key={empresa.ID_EMPRESA}
+            value={empresa.ID_EMPRESA}
+          >
+            {empresa.RUC + " " + empresa.RUBRO_EMPRESA}
+          </option>
+        ))}
+      </select>
       <button className="rounded p-2 text-white bg-orange-400/70" type="submit">
         Agregar Empleado
       </button>

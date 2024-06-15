@@ -1,50 +1,76 @@
-interface MAE_Trabajadores {
-    PK_MAE_Trabajador: number;
-    DNI: string;
+interface MAE_Empleado {
+    ID_EMPLEADO: number;
+    ID_TIPO: number;
     NOMBRE: string;
     APELLIDO: string;
     FECHA_NACIMIENTO: Date;
+    HIJOS: string;
     DIRECCION: string;
+    ID_EMPRESA: string;
+}
+
+interface MAE_Empresa {
+    ID_EMPRESA: string;
+    RAZON_SOCIAL: string;
+    RUBRO_EMPRESA: string;
+    DIRECCION: string;
+    RUC: string;
 }
 
 interface TRS_Boleta_Pago {
-    PK_TRS_Boleta_Pago: number;
-    PAGO_TOTAL: number;
+    ID_BOLETA_PAGO: number;
     FECHA: Date;
-    FK_MAE_Trabajador: number;
-    FK_MAE_Horario: number;
-    FK_MAE_Aportaciones: number;
-    FK_MAE_Remuneraciones: number;
-    FK_MAE_Descuentos: number;
+    ID_EMPLEADO: number;
+    DIAS_LABORADOS: number;
+    TOTAL_HORAS_LABORADAS: number;
+    HORAS_EXTRAS: number;
+    DIAS_NO_LABORADOS: number;
+    NETO_PAGAR: number;
+    ID_BOLETA_PAGO_DETALLES: number;
 }
 
-interface MAE_Remuneraciones {
-    PK_MAE_Remuneraciones: number;
-    SUELDO_COMPUTABLE: number;
-    REMUNERACION_VACACIONAL: number;
-    MOVILIDAD_SUPLEMENTOS: number;
-    CTS: number;
-    TOTAL_REMUNERACIONES: number;
+interface TRS_Remuneraciones {
+    ID_REMUNERACION_TRANSACCIONAL: number;
+    ID_REMUNERACIONES: number;
+    TOTAL: number;
 }
 
-interface MAE_Descuentos {
-    PK_MAE_Descuentos: number;
-    AFP_FONDO: number;
-    AFP_COMISION: number;
-    AFP_SEGURO: number;
-    ONP: number;
-    FALTAS: number;
-    RETENCIONES_JUDICIALES: number;
-    ADELANTOS: number;
-    TOTAL_DESCUENTOS: number;
+interface TRS_Descuentos {
+    ID_DESCUENTO_TRANSACCIONAL: number;
+    ID_DESCUENTO: number;
+    TOTAL: number;
 }
 
-interface MAE_Aportaciones {
-    PK_MAE_Aportaciones: number;
+interface TRS_Aportaciones {
+    ID_APORTACIONES: number;
     ESSALUD: number;
     SCTR: number;
 }
 
+interface MAE_Descuentos {
+    ID_DESCUENTO: number;
+    DESCRIPCION: string;
+    MONTO: number;
+    PORCENTAJE: number;
+}
+
+interface TRS_Boleta_Pago_Detalle {
+    ID_BOLETA_PAGO_DETALLE: number;
+    ID_DESCUENTO_TRANSACCIONAL: number;
+    ID_REMUNERACION_TRANSACCIONAL: number;
+    ID_APORTACIONES_TRANSACCIONAL: number;
+}
+
+interface MAE_Remuneraciones {
+    ID_REMUNERACIONES: number;
+    DESCRIPCION: string;
+    MONTO: number;
+}
+
+interface MAE_Tipo_Documento {
+    ID_TIPO: number;
+    DESCRIPCION: string;
+}
 interface MAE_Horario_Laborado {
     PK_MAE_Horario_Laborado: number;
     MES: number;

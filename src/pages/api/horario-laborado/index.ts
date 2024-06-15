@@ -28,12 +28,12 @@ export default async function handler(
         case "POST":
             try {
                 console.log(3)
-                console.log(req.body.newHorario)
-                const horario = JSON.parse(req.body.newHorario)
+                console.log(req.body.data)
+                const horario = JSON.parse(req.body.data)
                 console.log(horario)
                 const newHorario = await prisma.mAE_Horario_Laborado.create({data:horario})
                 console.log(newHorario)
-                res.status(200).json({message:"POST horarios"})
+                res.status(200).json({message:"POST horarios", horario:newHorario})
             } catch (error) {
                 console.log(error)
                 res.status(500).json({error:"Error fetching horarios"})

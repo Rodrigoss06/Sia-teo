@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { MAE_Trabajadores } from "@prisma/client";
+import { MAE_Empleado } from "@prisma/client";
 import { error } from "console";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   error?: string;
   message?: string;
-  empleados?: MAE_Trabajadores[]
+  empleados?: MAE_Empleado[]
 };
 
 export default async function handler(
@@ -17,7 +17,7 @@ export default async function handler(
     switch (req.method) {
         case "GET":
             try {
-                const empleados:MAE_Trabajadores[] = await prisma.mAE_Trabajadores.findMany()
+                const empleados:MAE_Empleado[] = await prisma.mAE_Empleado.findMany()
                 console.log(empleados)
                 res.status(200).json({message:"get empleados", empleados:empleados})
             } catch (error) {
@@ -31,7 +31,7 @@ export default async function handler(
                 console.log(req.body.newEmpleado)
                 const empleado = JSON.parse(req.body.newEmpleado)
                 console.log(empleado)
-                const newEmpleado = await prisma.mAE_Trabajadores.create({data:empleado})
+                const newEmpleado = await prisma.mAE_Empleado.create({data:empleado})
                 console.log(newEmpleado)
                 res.status(200).json({message:"POST empleados"})
             } catch (error) {

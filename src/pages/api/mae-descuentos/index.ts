@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { TRS_Descuentos } from "@prisma/client";
+import { MAE_Descuentos } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   error?: string;
   message?: string;
-  descuentos?: TRS_Descuentos[],
-  descuento?:TRS_Descuentos
+  descuentos?: MAE_Descuentos[],
+  descuento?:MAE_Descuentos
 };
 
 export default async function handler(
@@ -17,7 +17,7 @@ export default async function handler(
     switch (req.method) {
         case "GET":
             try {
-                const descuentos:TRS_Descuentos[] = await prisma.tRS_Descuentos.findMany()
+                const descuentos:MAE_Descuentos[] = await prisma.mAE_Descuentos.findMany()
                 console.log(descuentos)
                 res.status(200).json({message:"get descuentos", descuentos:descuentos})
             } catch (error) {
@@ -31,7 +31,7 @@ export default async function handler(
                 console.log(req.body.data)
                 const descuento = JSON.parse(req.body.data)
                 console.log(descuento)
-                const newDescuento = await prisma.tRS_Descuentos.create({data:descuento})
+                const newDescuento = await prisma.mAE_Descuentos.create({data:descuento})
                 console.log(newDescuento)
                 res.status(200).json({message:"POST descuentos", descuento:newDescuento})
             } catch (error) {

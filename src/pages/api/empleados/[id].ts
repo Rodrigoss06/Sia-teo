@@ -17,7 +17,7 @@ export default async function handler(
         const { id } = req.query
         console.log(id)
         const empleado = await prisma.mAE_Empleado.findFirst({where:{
-            PK_MAE_Empleado: Number(id)
+            ID_EMPLEADO: Number(id)
         }})
         console.log(empleado)
         res.status(200).json({message:"get Empleado", empleado:empleado!})
