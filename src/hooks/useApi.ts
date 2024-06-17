@@ -38,6 +38,14 @@ interface ApiError {
         throw err;
       }
     };
+
+  // Empleados
+  const getDocumentos = (API_URL:string) => request('get', `${API_URL}/tipo-documentos`);
+  const getDocumento = (API_URL:string,id: string) => request('get', `${API_URL}/tipo-documentos/${id}`);
+  const createDocumento = (API_URL:string,documento: any) => request('post', `${API_URL}/tipo-documentos`, documento);
+  const updateDocumento = (API_URL:string,id: string, documento: any) => request('put', `${API_URL}/tipo-documentos/${id}`, documento);
+  const deleteDocumento = (API_URL:string,id: string) => request('delete', `${API_URL}/tipo-documentos/${id}`);
+
   // Empleados
   const getEmpleados = (API_URL:string) => request('get', `${API_URL}/empleados`);
   const getEmpleado = (API_URL:string,id: string) => request('get', `${API_URL}/empleados/${id}`);
@@ -116,6 +124,11 @@ interface ApiError {
     createEmpleado,
     updateEmpleado,
     deleteEmpleado,
+    getDocumentos,
+    getDocumento,
+    createDocumento,
+    updateDocumento,
+    deleteDocumento,
     getEmpresas,
     getEmpresa,
     createEmpresa,

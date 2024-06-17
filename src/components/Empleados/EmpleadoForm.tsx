@@ -3,11 +3,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 function EmpleadoForm() {
-  const { loading, getEmpresas, createHorarioLaborado, createRemuneracion, createDescuento, createAportacion, createBoletaPago } = useApi();
+  const { loading, getEmpresas,getDocumentos, createHorarioLaborado, createRemuneracion, createDescuento, createAportacion, createBoletaPago } = useApi();
 
-  const [documento,setDocumento] = useState<Omit<MAE_Tipo_Documento, 'ID_TIPO'>>({
-    DESCRIPCION:""
-  })
+  const [documentos,setDocumentos] = useState<MAE_Tipo_Documento[]>()
   const [empresas,setEmpresas] = useState<MAE_Empresa[]>([])
   const [newEmpleado, setNewEmpleado] = useState<Omit<MAE_Empleado, 'ID_EMPLEADO'>>({
     ID_TIPO: 0,
@@ -25,6 +23,12 @@ function EmpleadoForm() {
       const data = await getEmpresas("http://localhost:3000/api")
       setEmpresas(data.empresas)
     }
+    const getDataDocumentos = async()=>{
+      const data = await getDocumentos("http://localhost:3000/api")
+      setDocumentos(data.documentos)
+    }
+    getDataEmpresas()
+    getDataDocumentos()
   },[])
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,7 +53,7 @@ function EmpleadoForm() {
     }
   };
   return (
-    <form onSubmit={handleOnSubmit} className="flex flex-col gap-y-3">
+    <form onSubmit={handleOnSubmit} className="flex flex-col gap-y-3 ">
       <div className="flex justify-center">
         <h1 className="text-white text-xl">Agregar Empleado</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
@@ -62,17 +66,17 @@ function EmpleadoForm() {
         onChange={(e) =>
           setNewEmpleado((state) => ({
             ...state,
-            ID_TIPO: e.target.value,
+            ID_TIPO: Number(e.target.value),
           }))
         }
       >
         <option value={""}></option>
-        {empresas?.map((empresa: MAE_Empresa) => (
+        {documentos?.map((documento: MAE_Tipo_Documento) => (
           <option
-            key={empresa.ID_EMPRESA}
-            value={empresa.ID_EMPRESA}
+            key={documento.ID_TIPO}
+            value={documento.DESCRIPCION}
           >
-            {empresa.RUC + " " + empresa.RUBRO_EMPRESA}
+            {documento.DESCRIPCION}
           </option>
         ))}
       </select>
