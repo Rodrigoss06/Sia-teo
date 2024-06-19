@@ -6,6 +6,7 @@ interface MAE_Empleado {
     FECHA_NACIMIENTO: Date;
     HIJOS: string;
     DIRECCION: string;
+    FECHA_INGRESO: Date;
     ID_EMPRESA: string;
 }
 
@@ -31,13 +32,11 @@ interface TRS_Boleta_Pago {
 
 interface TRS_Remuneraciones {
     ID_REMUNERACION_TRANSACCIONAL: number;
-    ID_REMUNERACIONES: number;
     TOTAL: number;
 }
 
 interface TRS_Descuentos {
     ID_DESCUENTO_TRANSACCIONAL: number;
-    ID_DESCUENTO: number;
     TOTAL: number;
 }
 
@@ -51,7 +50,8 @@ interface MAE_Descuentos {
     ID_DESCUENTO: number;
     DESCRIPCION: string;
     MONTO: number;
-    PORCENTAJE: number;
+    PORCENTAJE?: number;
+    ID_DESCUENTO_TRANSACCIONAL: number;
 }
 
 interface TRS_Boleta_Pago_Detalle {
@@ -65,12 +65,14 @@ interface MAE_Remuneraciones {
     ID_REMUNERACIONES: number;
     DESCRIPCION: string;
     MONTO: number;
+    ID_REMUNERACION_TRANSACCIONAL: number;
 }
 
 interface MAE_Tipo_Documento {
     ID_TIPO: number;
     DESCRIPCION: string;
 }
+
 interface MAE_Horario_Laborado {
     PK_MAE_Horario_Laborado: number;
     MES: number;

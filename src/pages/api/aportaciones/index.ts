@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { MAE_Aportaciones } from "@prisma/client";
+import { TRS_Aportaciones } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
   error?: string;
   message?: string;
-  aportaciones?: MAE_Aportaciones[],
-  aportacion?:MAE_Aportaciones
+  aportaciones?: TRS_Aportaciones[],
+  aportacion?:TRS_Aportaciones
 };
 
 export default async function handler(
@@ -17,7 +17,7 @@ export default async function handler(
     switch (req.method) {
         case "GET":
             try {
-                const aportaciones:MAE_Aportaciones[] = await prisma.mAE_Aportaciones.findMany()
+                const aportaciones:TRS_Aportaciones[] = await prisma.tRS_Aportaciones.findMany()
                 console.log(aportaciones)
                 res.status(200).json({message:"get aportaciones", aportaciones:aportaciones})
             } catch (error) {
@@ -31,7 +31,7 @@ export default async function handler(
                 console.log(req.body.data)
                 const aportacion = JSON.parse(req.body.data)
                 console.log(aportacion)
-                const newAportacion = await prisma.mAE_Aportaciones.create({data:aportacion})
+                const newAportacion = await prisma.tRS_Aportaciones.create({data:aportacion})
                 console.log(newAportacion)
                 res.status(200).json({message:"POST aportaciones",aportacion:newAportacion})
             } catch (error) {

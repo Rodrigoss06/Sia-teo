@@ -33,8 +33,8 @@ function NavigationBar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <section className="relative">
-      <div className="grid grid-cols-[minmax(30px,_2fr)_minmax(420px,_5fr)] px-8 py-4 backdrop-blur bg-white shadow-md">
+    <section className="relative ">
+      <div className="grid grid-cols-[minmax(30px,_2fr)_minmax(420px,_5fr)] px-8 py-4 backdrop-blur bg-[#D9D9D9] shadow-md">
         <Logo className="w-12 h-12 mt-2" />
         <div className="hidden md:flex md:justify-between md:items-center space-x-4">
           <a href="/" className="hover:text-blue-600">Dashboard</a>

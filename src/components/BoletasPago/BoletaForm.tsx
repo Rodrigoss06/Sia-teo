@@ -1,7 +1,8 @@
 import useApi from "@/hooks/useApi";
-import { TRS_Remuneraciones } from "@prisma/client";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+type Remuneracion = Omit<MAE_Remuneraciones, 'ID_REMUNERACIONES'> & {
+  ID_REMUNERACION_TRANSACCIONAL: number;
+};
 
 function BoletaForm() {
   const {
@@ -9,47 +10,60 @@ function BoletaForm() {
     error,
     getEmpleados,
     createHorarioLaborado,
+    createMaeRemuneracion,
     createRemuneracion,
+    createMaeDescuento,
     createDescuento,
     createAportacion,
     createBoletaPago,
+    createBoletaPagoDetalle
   } = useApi();
+  
   const [trabajadores, setTrabajadores] = useState<MAE_Empleado[]>();
-  const [horario_Laborado, setHorario_Laborado] = useState<
-    Omit<MAE_Horario_Laborado, "PK_MAE_Horario_Laborado">
-  >({
-    MES: 0,
-    DIAS_LABORADOS: 0,
-    HORAS_LABORADAS: 0,
-    HORAS_EXTRA: 0,
-    DIAS_NO_LABORADOS: 0,
-  });
+  // const [horario_Laborado, setHorario_Laborado] = useState<
+  //   Omit<MAE_Horario_Laborado, "PK_MAE_Horario_Laborado">
+  // >({
+  //   MES: 0,
+  //   DIAS_LABORADOS: 0,
+  //   HORAS_LABORADAS: 0,
+  //   HORAS_EXTRA: 0,
+  //   DIAS_NO_LABORADOS: 0,
+  // });
+  
   const [trsRemuneraciones, setTrsRemuneraciones] = useState<
     Omit<TRS_Remuneraciones, "ID_REMUNERACION_TRANSACCIONAL">
   >({
-    ID_REMUNERACIONES: 0,
-    TOTAL: null,
+    TOTAL: 0,
   });
-  const [remuneraciones, setRemuneraciones] = useState<
-    Omit<MAE_Remuneraciones, "ID_REMUNERACIONES">[]
-  >([{ DESCRIPCION: "", MONTO: 0 }]);
-
+  
+  const [remuneraciones, setRemuneraciones] = useState<Remuneracion[]>([{ 
+    ID_REMUNERACION_TRANSACCIONAL: 0, 
+    DESCRIPCION: "", 
+    MONTO: 0 
+  }]);
+  
   const [trsDescuentos, setTrsDescuentos] = useState<
     Omit<TRS_Descuentos, "ID_DESCUENTO_TRANSACCIONAL">
   >({
-    ID_DESCUENTO: 0,
     TOTAL: 0,
   });
+  
   const [descuentos, setDescuentos] = useState<
     Omit<MAE_Descuentos, "ID_DESCUENTO">[]
-  >([{ DESCRIPCION: "", MONTO: 0, PORCENTAJE: 0 }]);
-
+  >([{ 
+    ID_DESCUENTO_TRANSACCIONAL: 0, 
+    DESCRIPCION: "", 
+    MONTO: 0, 
+    PORCENTAJE: 0 
+  }]);
+  
   const [aportaciones, setAportaciones] = useState<
     Omit<TRS_Aportaciones, "ID_APORTACIONES">
   >({
     ESSALUD: 1,
     SCTR: 0,
   });
+  
   const [boletaPagoDetalles, setBoletaPagoDetalles] = useState<
     Omit<TRS_Boleta_Pago_Detalle, "ID_BOLETA_PAGO_DETALLE">
   >({
@@ -57,7 +71,7 @@ function BoletaForm() {
     ID_REMUNERACION_TRANSACCIONAL: 0,
     ID_APORTACIONES_TRANSACCIONAL: 0,
   });
-
+  
   const [boletaPago, setBoletaPago] = useState<
     Omit<TRS_Boleta_Pago, "ID_BOLETA_PAGO">
   >({
@@ -70,7 +84,7 @@ function BoletaForm() {
     NETO_PAGAR: 0,
     ID_BOLETA_PAGO_DETALLES: 0,
   });
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const data = await getEmpleados("http://localhost:3000/api");
@@ -78,7 +92,20 @@ function BoletaForm() {
     };
     fetchData();
   }, []);
-  useEffect(() => {}, [remuneraciones]);
+  
+  useEffect(() => {
+    const remuneraciones_total = remuneraciones.reduce((acumulador, currentValue) => acumulador + currentValue.MONTO, 0);
+    const descuento_total = descuentos.reduce((acumulador, currentValue) => {
+      const descuento = currentValue.PORCENTAJE;
+      if (descuento !== 0) {
+        return acumulador + (currentValue.PORCENTAJE! / 100 * remuneraciones_total);
+      }
+      return acumulador + currentValue.MONTO;
+    }, 0);
+    const pago_neto = remuneraciones_total - descuento_total;
+    setBoletaPago((state) => ({ ...state, NETO_PAGAR: pago_neto }));
+  }, [remuneraciones, descuentos]);
+  
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -87,67 +114,90 @@ function BoletaForm() {
       //   JSON.stringify(horario_Laborado)
       // );
       // console.log("Nuevo Horario:", newHorario);
-
+  
       // if (!newHorario) throw new Error("No se pudo crear el horario");
-
-      const newRemuneraciones = await Promise.all(
-        remuneraciones.map((remuneracion) =>
-          createRemuneracion(
+  
+      const newTrsRemuneracion = await createRemuneracion("http://localhost:3000/api", JSON.stringify(trsRemuneraciones));
+      const trsRemuneracionId = newTrsRemuneracion.remuneracion.ID_REMUNERACION_TRANSACCIONAL;
+  
+      const updatedRemuneraciones = remuneraciones.map((remuneracion) => ({
+        ...remuneracion,
+        ID_REMUNERACION_TRANSACCIONAL: trsRemuneracionId,
+      }));
+      setRemuneraciones(updatedRemuneraciones);
+  
+      const newMaeRemuneraciones = await Promise.all(
+        updatedRemuneraciones.map((remuneracion) =>
+          createMaeRemuneracion(
             "http://localhost:3000/api",
             JSON.stringify(remuneracion)
           )
         )
       );
-
-      const newDescuentos = await Promise.all(
-        descuentos.map((descuento) =>
-          createDescuento("http://localhost:3000/api", JSON.stringify(descuento))
-        )
+  
+      console.log('Nuevas remuneraciones MAE:', newMaeRemuneraciones);
+  
+      const newDescuento = await createDescuento("http://localhost:3000/api", JSON.stringify(trsDescuentos));
+      const trsDescuentoId = newDescuento.descuento.ID_DESCUENTO_TRANSACCIONAL;
+  
+      const updateDescuentos = descuentos.map((descuento) => ({
+        ...descuento,
+        ID_DESCUENTO_TRANSACCIONAL: trsDescuentoId
+      }));
+      setDescuentos(updateDescuentos);
+  
+      const newMaeDescuentos = await Promise.all(
+        updateDescuentos.map((descuento) => createMaeDescuento(
+          "http://localhost:3000/api",
+          JSON.stringify(descuento)
+        ))
       );
-
+      console.log('Nuevas descuentos MAE:', newMaeDescuentos);
+  
       const newAportacion = await createAportacion(
         "http://localhost:3000/api",
         JSON.stringify(aportaciones)
       );
-
-      const ID_REMUNERACION_TRANSACCIONAL = newRemuneraciones[0].ID_REMUNERACION_TRANSACCIONAL;
-      const ID_DESCUENTO_TRANSACCIONAL = newDescuentos[0].ID_DESCUENTO_TRANSACCIONAL;
-      const ID_APORTACIONES_TRANSACCIONAL = newAportacion.ID_APORTACIONES;
-
+      const trsAportacionesId = newAportacion.aportacion.ID_APORTACIONES;
+      console.log(trsAportacionesId);
+      console.log('Nuevas aportaciones:', newAportacion);
+  
       const newBoletaPagoDetalle = {
-        ID_DESCUENTO_TRANSACCIONAL,
-        ID_REMUNERACION_TRANSACCIONAL,
-        ID_APORTACIONES_TRANSACCIONAL,
+        ID_DESCUENTO_TRANSACCIONAL: trsDescuentoId,
+        ID_REMUNERACION_TRANSACCIONAL: trsRemuneracionId,
+        ID_APORTACIONES_TRANSACCIONAL: trsAportacionesId,
       };
-
-      const boletaPagoDetalle = await createBoletaPago(
+  
+      const boletaPagoDetalle = await createBoletaPagoDetalle(
         "http://localhost:3000/api",
         JSON.stringify(newBoletaPagoDetalle)
       );
-
+      console.log(boletaPagoDetalle);
+  
       const newBoletaPago = {
         ...boletaPago,
-        ID_BOLETA_PAGO_DETALLES: boletaPagoDetalle.ID_BOLETA_PAGO_DETALLE,
+        ID_BOLETA_PAGO_DETALLES: boletaPagoDetalle.boleta_pago.ID_BOLETA_PAGO_DETALLE,
       };
-
+      console.log(newBoletaPago);
       const boletaPagoCreated = await createBoletaPago(
         "http://localhost:3000/api",
         JSON.stringify(newBoletaPago)
       );
-
+  
       console.log('Nueva Boleta de Pago:', boletaPagoCreated);
     } catch (error) {
       console.error("Error creando boleta de pago:", error);
     }
   };
+  
   const handleAddRemuneracionField = () => {
-    setRemuneraciones([...remuneraciones, { DESCRIPCION: "", MONTO: 0 }]);
+    setRemuneraciones([...remuneraciones, { ID_REMUNERACION_TRANSACCIONAL: 0, DESCRIPCION: "", MONTO: 0 }]);
   };
-
+  
   const handleRemoveRemuneracionField = (index: number) => {
     setRemuneraciones(remuneraciones.filter((_, i) => i !== index));
   };
-
+  
   const handleChangeRemuneracion = (
     index: number,
     field: string,
@@ -160,19 +210,19 @@ function BoletaForm() {
     };
     setRemuneraciones(updatedRemuneraciones);
   };
-
+  
   // Funciones para manejar múltiples descuentos
   const handleAddDescuentoField = () => {
     setDescuentos([
       ...descuentos,
-      { DESCRIPCION: "", MONTO: 0, PORCENTAJE: 0 },
+      { ID_DESCUENTO_TRANSACCIONAL: 0, DESCRIPCION: "", MONTO: 0, PORCENTAJE: 0 },
     ]);
   };
-
+  
   const handleRemoveDescuentoField = (index: number) => {
     setDescuentos(descuentos.filter((_, i) => i !== index));
   };
-
+  
   const handleChangeDescuento = (
     index: number,
     field: string,
@@ -182,6 +232,7 @@ function BoletaForm() {
     updatedDescuentos[index] = { ...updatedDescuentos[index], [field]: value };
     setDescuentos(updatedDescuentos);
   };
+  
   return (
     <form
       onSubmit={handleOnSubmit}
@@ -201,7 +252,7 @@ function BoletaForm() {
           onChange={(e) =>
             setBoletaPago((state) => ({
               ...state,
-              FK_MAE_Trabajador: Number(e.target.value),
+              ID_EMPLEADO: Number(e.target.value),
             }))
           }
         >
@@ -226,10 +277,10 @@ function BoletaForm() {
             name="dias_laborados"
             className="rounded"
             placeholder="DIAS LABORADOS"
-            value={horario_Laborado.DIAS_LABORADOS}
+            value={boletaPago.DIAS_LABORADOS}
             required
             onChange={(e) =>
-              setHorario_Laborado((state) => ({
+              setBoletaPago((state) => ({
                 ...state,
                 DIAS_LABORADOS: Number(e.target.value),
               }))
@@ -246,11 +297,11 @@ function BoletaForm() {
             name="horas_laborados"
             className="rounded"
             placeholder="HORAS LABORADAS"
-            value={horario_Laborado.HORAS_LABORADAS}
+            value={boletaPago.TOTAL_HORAS_LABORADAS}
             onChange={(e) =>
-              setHorario_Laborado((state) => ({
+              setBoletaPago((state) => ({
                 ...state,
-                HORAS_LABORADAS: Number(e.target.value),
+                TOTAL_HORAS_LABORADAS: Number(e.target.value),
               }))
             }
           />
@@ -265,11 +316,11 @@ function BoletaForm() {
             name="horas_extra"
             className="rounded"
             placeholder="HORAS EXTRA"
-            value={horario_Laborado.HORAS_EXTRA}
+            value={boletaPago.HORAS_EXTRAS}
             onChange={(e) =>
-              setHorario_Laborado((state) => ({
+              setBoletaPago((state) => ({
                 ...state,
-                HORAS_EXTRA: Number(e.target.value),
+                HORAS_EXTRAS: Number(e.target.value),
               }))
             }
           />
@@ -284,9 +335,9 @@ function BoletaForm() {
             name="dias_no_laborados"
             className="rounded"
             placeholder="DIAS NO LABORADOS"
-            value={horario_Laborado.DIAS_NO_LABORADOS}
+            value={boletaPago.DIAS_NO_LABORADOS}
             onChange={(e) =>
-              setHorario_Laborado((state) => ({
+              setBoletaPago((state) => ({
                 ...state,
                 DIAS_NO_LABORADOS: Number(e.target.value),
               }))

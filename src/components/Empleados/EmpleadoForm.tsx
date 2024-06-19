@@ -8,13 +8,14 @@ function EmpleadoForm() {
   const [documentos,setDocumentos] = useState<MAE_Tipo_Documento[]>()
   const [empresas,setEmpresas] = useState<MAE_Empresa[]>([])
   const [newEmpleado, setNewEmpleado] = useState<Omit<MAE_Empleado, 'ID_EMPLEADO'>>({
+    FECHA_INGRESO:new Date(),
     ID_TIPO: 0,
     ID_EMPRESA: "",
     NOMBRE: "",
     APELLIDO: "",
     FECHA_NACIMIENTO: new Date(),
     DIRECCION: "",
-    HIJOS:""
+    HIJOS:"si"
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -38,13 +39,14 @@ function EmpleadoForm() {
       });
       console.log(response);
       setNewEmpleado({
+        FECHA_INGRESO:new Date(),
         ID_TIPO: 0,
         ID_EMPRESA: "",
         NOMBRE: "",
         APELLIDO: "",
         FECHA_NACIMIENTO: new Date(),
         DIRECCION: "",
-        HIJOS:""
+        HIJOS:"si"
       });
       setError(null);
     } catch (error) {
@@ -64,17 +66,20 @@ function EmpleadoForm() {
         className=" rounded text-lg grid col-span-2"
         required
         onChange={(e) =>
-          setNewEmpleado((state) => ({
-            ...state,
-            ID_TIPO: Number(e.target.value),
-          }))
+          {
+            console.log(e.target.value)
+            setNewEmpleado((state) => ({
+              ...state,
+              ID_TIPO: Number(e.target.value),
+            }))
+          }
         }
       >
         <option value={""}></option>
         {documentos?.map((documento: MAE_Tipo_Documento) => (
           <option
             key={documento.ID_TIPO}
-            value={documento.DESCRIPCION}
+            value={documento.ID_TIPO}
           >
             {documento.DESCRIPCION}
           </option>

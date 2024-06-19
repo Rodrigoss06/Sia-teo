@@ -33,7 +33,7 @@ export default async function handler(
                 console.log(newBoleta)
                 const newBoletaPago = await prisma.tRS_Boleta_Pago_Detalle.create({data:newBoleta})
                 console.log(newBoletaPago)
-                res.status(200).json({message:"POST boletas de pago", boleta_pago:newBoleta})
+                res.status(200).json({message:"POST boletas de pago", boleta_pago:newBoletaPago})
             } catch (error) {
                 console.log(error)
                 res.status(500).json({error:"Error fetching boletas de pago"})

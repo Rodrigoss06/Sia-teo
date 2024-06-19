@@ -1,95 +1,80 @@
+import NavigationBar from "@/components/Admin/Navbar/NavigationBar";
+import BoletaItem from "@/components/BoletasPago/BoletaItem";
 import useApi from "@/hooks/useApi";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
 function Page() {
-    const [empleado, setEmpleado] = useState<MAE_Empleado | null>(null);
-    const [empresa, setEmpresa] = useState<MAE_Empresa | null>(null);
-    const [boletas, setBoletas] = useState<TRS_Boleta_Pago[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [carga,setCarga]= useState(0)
-    const router = useRouter();
-    const { id } = router.query;
-    const { getEmpleado, getEmpresa, getBoletasPago } = useApi();
-    console.log(id)
-    useEffect(() => {
-        console.log(id)
+  const [empleado, setEmpleado] = useState<MAE_Empleado | null>(null);
+  const [empresa, setEmpresa] = useState<MAE_Empresa | null>(null);
+  const [boletas, setBoletas] = useState<TRS_Boleta_Pago[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [retry, setRetry] = useState(false);
+  const router = useRouter();
+  const { id } = router.query;
+  const { getEmpleado, getEmpresa, getBoletasPago } = useApi();
+
+  useEffect(() => {
+    const fetchData = async () => {
       if (!id) {
-        console.log(id)
-        setCarga(carga+1)
-        return
-      };
+        setRetry(true);
+        return;
+      }
 
-      const getDataEmpleado = async () => {
-        try {
-            console.log(2)
-          const data = await getEmpleado("http://localhost:3000/api",String(id));
-          console.log(data)
-          if (data.empleado) {
-            console.log(data.empleado)
-            console.log(empleado)
-            try {
-                console.log(7)
-                console.log(3)
-                console.log(empleado!.FK_MAE_Empresa_MAE_Empleado!)
-                const data = await getEmpresa("http://localhost:3000/api",empleado!.FK_MAE_Empresa_MAE_Empleado!);
-                console.log(data)
-                console.log(data.empresa)
-                setEmpresa(data.empresa);
-              } catch (error) {
-                console.error(error);
-              }
-              try {
-                console.log(8)
-                console.log(4)
-                const data = await getBoletasPago("http://localhost:3000/api");
-                console.log(data)
-                console.log(data.boletas)
-                const filteredBoletas = data.boletas.filter(
-                  (boleta: TRS_Boleta_Pago) => boleta.FK_MAE_Empleado_TRS_Boleta_Pago === empleado!.PK_MAE_Empleado
-                );
-                console.log(filteredBoletas)
-                setBoletas(filteredBoletas);
-              } catch (error) {
-                console.error(error);
-              }
-              setLoading(false)
-          }
-          setEmpleado(data.empleado);
-        } catch (error) {
-          console.error(error);
+      try {
+        const dataEmpleado = await getEmpleado("http://localhost:3000/api", String(id));
+        if (dataEmpleado.empleado) {
+          setEmpleado(dataEmpleado.empleado);
+
+          const dataEmpresa = await getEmpresa("http://localhost:3000/api", dataEmpleado.empleado.ID_EMPRESA!);
+          setEmpresa(dataEmpresa.empresa);
+
+          const dataBoletas = await getBoletasPago("http://localhost:3000/api");
+          const filteredBoletas = dataBoletas.boletas_pagos.filter(
+            (boleta: TRS_Boleta_Pago) => boleta.ID_EMPLEADO === dataEmpleado.empleado.ID_EMPLEADO
+          );
+          setBoletas(filteredBoletas);
         }
-      };
-  
-      getDataEmpleado();
-    }, []);
-  
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  
-    if (loading || !empleado) {
-      return <div>Loading...</div>;
+    fetchData();
+
+    if (retry) {
+      const retryTimeout = setTimeout(() => {
+        setRetry(false);
+      }, 500);
+      return () => clearTimeout(retryTimeout);
     }
+  }, [id, retry]);
+  if (loading || !empleado) {
+    return <div>Loading...</div>;
+  }
   
     return (
       <div>
+      <NavigationBar />
+      <div className="p-4">
         <div>
-          <h1>{empleado.NOMBRE} {empleado.APELLIDO}</h1>
+          <h1 className="text-2xl font-bold">{empleado.NOMBRE} {empleado.APELLIDO}</h1>
+          <h1 className="text-xl font-semibold">Datos:</h1>
         </div>
-        <div>
-          <h1>Datos:</h1>
-          <p>DNI: {empleado.DNI}</p>
-          <p>Fecha de nacimiento: {new Date(JSON.stringify(empleado.FECHA_NACIMIENTO)).toLocaleDateString()}</p>
-          <p>Empresa: {empresa?.RAZON_SOCIAL}</p>
-          <h2>Boletas de Pago:</h2>
-          <ul>
+        <div className="p-4 bg-gray-200 max-w-lg flex flex-col justify-start gap-y-3 rounded shadow-lg">
+          <p className="text-lg">DNI: {empleado.ID_TIPO}</p>
+          <p className="text-lg">Fecha de nacimiento: {empleado.FECHA_NACIMIENTO.toString().slice(0,10)}</p>
+          <p className="text-lg">Empresa: {empresa?.RAZON_SOCIAL}</p>
+        </div>
+          <h2 className="text-xl font-semibold mt-4">Boletas de Pago:</h2>
+          <ul className="list-disc pl-5">
             {boletas.map((boleta) => (
-              <li key={boleta.PK_TRS_Boleta_Pago}>
-                {boleta.MES}/{boleta.ANIO} - {boleta.NETO_PAGAR} Soles
-              </li>
+              <BoletaItem boleta={boleta}/>
             ))}
           </ul>
-        </div>
       </div>
+    </div>
     );
   }
   
