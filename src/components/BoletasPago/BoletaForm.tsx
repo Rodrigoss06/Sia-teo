@@ -10,6 +10,8 @@ function BoletaForm() {
     error,
     getEmpleados,
     createHorarioLaborado,
+    getMaeDescuentos,
+    getMaeRemuneraciones,
     createMaeRemuneracion,
     createRemuneracion,
     createMaeDescuento,
@@ -35,7 +37,12 @@ function BoletaForm() {
   >({
     TOTAL: 0,
   });
-  
+  const [MaeRemuneraciones,setMaeRemuneraciones]= useState<MAE_Remuneraciones[]>([])
+  const [selectMaeRemuneracion,setSelectMaeRemuneracion]= useState<Omit<MAE_Remuneraciones,'ID_REMUNERACIONES'>>({
+    ID_REMUNERACION_TRANSACCIONAL:0,
+    DESCRIPCION:"",
+    MONTO:0
+  })
   const [remuneraciones, setRemuneraciones] = useState<Remuneracion[]>([{ 
     ID_REMUNERACION_TRANSACCIONAL: 0, 
     DESCRIPCION: "", 
@@ -47,7 +54,8 @@ function BoletaForm() {
   >({
     TOTAL: 0,
   });
-  
+  const [MaeDescuentos,setMaeDescuentos]= useState<MAE_Descuentos[]>([])
+  const [selectMaeDescuento,setSelectMaeDescuento]= useState<Omit<MAE_Descuentos,'ID_DESCUENTO'>>()
   const [descuentos, setDescuentos] = useState<
     Omit<MAE_Descuentos, "ID_DESCUENTO">[]
   >([{ 
@@ -87,17 +95,24 @@ function BoletaForm() {
   
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getEmpleados("http://localhost:3000/api");
-      setTrabajadores(data.empleados);
+      const dataEmpleados = await getEmpleados("http://localhost:3000/api");
+      setTrabajadores(dataEmpleados.empleados);
+      const dataRemuneraciones =await getMaeRemuneraciones("http://localhost:3000/api")
+      const maeRemuneracionesFilter = dataRemuneraciones.remuneraciones.filter((remuneracion:MAE_Remuneraciones)=>remuneracion.ID_REMUNERACION_TRANSACCIONAL ===null)
+      setMaeRemuneraciones(maeRemuneracionesFilter)
+      const dataDescuentos = await getMaeDescuentos("http://localhost:3000/api")
+      const maeDescuentosFilter = dataDescuentos.descuentos.filter((descuento:MAE_Descuentos)=>descuento.ID_DESCUENTO_TRANSACCIONAL === null)
+      setMaeDescuentos(maeDescuentosFilter)
     };
     fetchData();
   }, []);
   
   useEffect(() => {
     const remuneraciones_total = remuneraciones.reduce((acumulador, currentValue) => acumulador + currentValue.MONTO, 0);
+    console.log(remuneraciones_total)
     const descuento_total = descuentos.reduce((acumulador, currentValue) => {
       const descuento = currentValue.PORCENTAJE;
-      if (descuento !== 0) {
+      if (descuento !== 0 && descuento !==null && descuento!=undefined) {
         return acumulador + (currentValue.PORCENTAJE! / 100 * remuneraciones_total);
       }
       return acumulador + currentValue.MONTO;
@@ -124,7 +139,6 @@ function BoletaForm() {
         ...remuneracion,
         ID_REMUNERACION_TRANSACCIONAL: trsRemuneracionId,
       }));
-      setRemuneraciones(updatedRemuneraciones);
   
       const newMaeRemuneraciones = await Promise.all(
         updatedRemuneraciones.map((remuneracion) =>
@@ -144,7 +158,6 @@ function BoletaForm() {
         ...descuento,
         ID_DESCUENTO_TRANSACCIONAL: trsDescuentoId
       }));
-      setDescuentos(updateDescuentos);
   
       const newMaeDescuentos = await Promise.all(
         updateDescuentos.map((descuento) => createMaeDescuento(
@@ -191,7 +204,10 @@ function BoletaForm() {
   };
   
   const handleAddRemuneracionField = () => {
-    setRemuneraciones([...remuneraciones, { ID_REMUNERACION_TRANSACCIONAL: 0, DESCRIPCION: "", MONTO: 0 }]);
+    if (selectMaeRemuneracion?.DESCRIPCION!=="",selectMaeRemuneracion?.MONTO!==0) {
+      console.log(selectMaeRemuneracion)
+      setRemuneraciones([...remuneraciones, selectMaeRemuneracion!]);
+    }
   };
   
   const handleRemoveRemuneracionField = (index: number) => {
@@ -213,10 +229,10 @@ function BoletaForm() {
   
   // Funciones para manejar múltiples descuentos
   const handleAddDescuentoField = () => {
-    setDescuentos([
-      ...descuentos,
-      { ID_DESCUENTO_TRANSACCIONAL: 0, DESCRIPCION: "", MONTO: 0, PORCENTAJE: 0 },
-    ]);
+    if (selectMaeDescuento?.DESCRIPCION!=="",selectMaeDescuento?.MONTO!==0) {
+      console.log(selectMaeDescuento)
+      setDescuentos([...descuentos,selectMaeDescuento!]);
+    }
   };
   
   const handleRemoveDescuentoField = (index: number) => {
@@ -236,7 +252,7 @@ function BoletaForm() {
   return (
     <form
       onSubmit={handleOnSubmit}
-      className="grid gap-5 text-black  grid-rows-[minmax(50px,_0.5fr),_repeat(5,_minmax(70px,_1fr))_minmax(20px,40px)] grid-cols-[repeat(6,minmax(150px,_1fr))]"
+      className="grid gap-5 text-black  grid-rows-[minmax(50px,_0.5fr),_repeat(5,_minmax(70px,_1fr))_minmax(20px,40px)] grid-cols-[repeat(6,minmax(150px,_1fr))] p-4 mt-10 rounded bg-slate-600"
     >
       <div className="grid col-span-6">
         <h1 className="text-white text-xl">Crear Boleta de Pago</h1>
@@ -348,32 +364,11 @@ function BoletaForm() {
       <div className="grid col-span-2 row-span-4 gap-4 grid-rows-[repeat(4,_minmax(70px,_1fr))]" id="remuneraciones">
         <h3 className="text-white row-span-1">Remuneraciones</h3>
         {remuneraciones.map((remuneracion, index) => (
-          <div key={index} className="row-span-2 flex flex-col justify-around">
-            <input
-              type="text"
-              placeholder="Descripcion"
-              className="rounded p-2"
-              value={remuneracion.DESCRIPCION}
-              onChange={(e) =>
-                handleChangeRemuneracion(index, "DESCRIPCION", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              placeholder="Monto"
-              value={remuneracion.MONTO}
-              className="rounded p-2"
-              onChange={(e) =>
-                handleChangeRemuneracion(
-                  index,
-                  "MONTO",
-                  parseFloat(e.target.value)
-                )
-              }
-            />
+          <div key={index} className="row-span-2 flex flex-col justify-around text-white">
+            <p>{remuneracion.DESCRIPCION}:  {remuneracion.MONTO}</p>
             {remuneraciones.length > 1 && (
               <button
-                className="text-white p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
+                className=" p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
                 onClick={() => handleRemoveRemuneracionField(index)}
               >
                 Eliminar
@@ -382,6 +377,20 @@ function BoletaForm() {
           </div>
         ))}
         <div className="row-span-1 flex items-center">
+          <select name="MaeRemuneraciones" id="maeremuneraciones" onChange={(e)=>{
+            if (e.target.value!=="") {
+              console.log(e.target.value)
+              setSelectMaeRemuneracion({ID_REMUNERACION_TRANSACCIONAL:0,DESCRIPCION:JSON.parse(e.target.value).DESCRIPCION,MONTO:Number(JSON.parse(e.target.value).MONTO)})
+            }else{
+              console.log(e.target.value)
+              setSelectMaeRemuneracion({ID_REMUNERACION_TRANSACCIONAL:0,DESCRIPCION:"",MONTO:0})
+            }
+          }}>
+            <option value="">Seleccionar remuneraciones</option>
+            {MaeRemuneraciones.map((maeRemuneracion)=>(
+              <option value={JSON.stringify(maeRemuneracion)}>{maeRemuneracion.DESCRIPCION}: {maeRemuneracion.MONTO}</option>
+            ))}
+          </select>
         <button
           className="text-white p-2 bg-blue-400 hover:bg-blue-500 rounded"
           onClick={handleAddRemuneracionField}
@@ -393,45 +402,11 @@ function BoletaForm() {
       <div className="grid col-span-2 row-span-4 gap-4 grid-rows-[repeat(4,_minmax(70px,_1fr))]" id="descuentos">
         <h3 className="text-white row-span-1">Descuentos</h3>
         {descuentos.map((descuento, index) => (
-          <div key={index} className="row-span-2 flex flex-col justify-around">
-            <input
-              type="text"
-              placeholder="Descripcion"
-              value={descuento.DESCRIPCION}
-              className="p-2 rounded"
-              onChange={(e) =>
-                handleChangeDescuento(index, "DESCRIPCION", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              placeholder="Monto"
-              value={descuento.MONTO}
-              className="p-2 rounded"
-              onChange={(e) =>
-                handleChangeDescuento(
-                  index,
-                  "MONTO",
-                  parseFloat(e.target.value)
-                )
-              }
-            />
-            <input
-              type="number"
-              placeholder="Porcentaje"
-              value={descuento.PORCENTAJE}
-              className="p-2 rounded"
-              onChange={(e) =>
-                handleChangeDescuento(
-                  index,
-                  "PORCENTAJE",
-                  parseFloat(e.target.value)
-                )
-              }
-            />
+          <div key={index} className="row-span-2 flex flex-col justify-around text-white">
+            <p>{descuento.DESCRIPCION}:  {descuento.MONTO}</p>
             {descuentos.length > 1 && (
               <button
-                className="text-white p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
+                className=" p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
                 onClick={() => handleRemoveDescuentoField(index)}
               >
                 Eliminar
@@ -440,6 +415,22 @@ function BoletaForm() {
           </div>
         ))}
         <div className="flex items-center">
+          <select name="MaeDescuentos" id="maedescuentos" onChange={(e)=>{
+            if (e.target.value!=="") {
+              console.log(e.target.value)
+
+              setSelectMaeDescuento({ID_DESCUENTO_TRANSACCIONAL:0,DESCRIPCION:JSON.parse(e.target.value).DESCRIPCION,MONTO:Number(JSON.parse(e.target.value).MONTO)})
+            }else{
+              console.log(e.target.value)
+
+              setSelectMaeDescuento({ID_DESCUENTO_TRANSACCIONAL:0,DESCRIPCION:"",MONTO:0})
+            }
+          }}>
+            <option value="">Seleccionar descuentos</option>
+            {MaeDescuentos.map((maeDescuento)=>(
+              <option value={JSON.stringify(maeDescuento)}>{maeDescuento.DESCRIPCION}: {maeDescuento.MONTO}</option>
+            ))}
+          </select>
         <button
           className="text-white p-2 max-w-48 max-h-12 bg-blue-400 hover:bg-blue-500 rounded"
           onClick={handleAddDescuentoField}

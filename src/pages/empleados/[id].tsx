@@ -62,7 +62,7 @@ function Page() {
           <h1 className="text-2xl font-bold">{empleado.NOMBRE} {empleado.APELLIDO}</h1>
           <h1 className="text-xl font-semibold">Datos:</h1>
         </div>
-        <div className="p-4 bg-gray-200 max-w-lg flex flex-col justify-start gap-y-3 rounded shadow-lg">
+        <div className="p-4 mt-4 bg-gray-200 max-w-lg flex flex-col justify-start gap-y-3 rounded shadow-lg">
           <p className="text-lg">DNI: {empleado.ID_TIPO}</p>
           <p className="text-lg">Fecha de nacimiento: {empleado.FECHA_NACIMIENTO.toString().slice(0,10)}</p>
           <p className="text-lg">Empresa: {empresa?.RAZON_SOCIAL}</p>

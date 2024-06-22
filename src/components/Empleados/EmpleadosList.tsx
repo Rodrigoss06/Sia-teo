@@ -4,7 +4,7 @@ import EmpleadoItem from "./EmpleadoItem";
 import ModalAgregarEmpleado from "../modals/ModalAgregarEmpleado";
 import EmpleadoForm from "./EmpleadoForm";
 import ModalAgregarEmpresa from "../modals/ModalAgregarEmpresa";
-import EmpresasForm from "../empresas/EmpresasForm";
+import EmpresasForm from "../Empresas/EmpresasForm";
 
 function EmpleadosList() {
   const [empleados, setEmpleados] = useState([]);
@@ -25,14 +25,14 @@ function EmpleadosList() {
     getEmpleados();
   }, []);
   return (
-    <div className="bg-blue-200 h-screen">
+    <div className=" h-screen">
       <span className="flex justify-between">
-        <h1 className="text-xl ml-8 mt-4">Lista de Empleados:</h1>
+        <h1 className="text-2xl font-semibold m-4">Lista de Empleados:</h1>
         <button className="bg-orange-400 rounded-2xl p-2 mt-4 mr-8" onClick={()=>setShowModalEmpleado(!showModalEmpleado)}>Agregar empleado</button>
         <button className="bg-orange-400 rounded-2xl p-2 mt-4 mr-8" onClick={()=>setShowModalEmpresa(!showModalEmpresa)}>Agregar empresa</button>
       </span>
       <section className="bg-zinc-700 text-white">
-        <span className="grid grid-cols-[minmax(200px,_4fr)_minmax(50px,_1fr)_minmax(120px,_3fr)_minmax(100px,_2fr)_minmax(150px,_3fr)] m-2 p-2 rounded border-t border-x">
+        <span className="grid grid-cols-[minmax(200px,_4fr)_minmax(50px,_1fr)_minmax(120px,_3fr)_minmax(100px,_2fr)_minmax(150px,_3fr)]  gap-4 p-4 mt-2 ">
           <p>Nombre</p>
           <p>DNI</p>
           <p>Dirección</p>

@@ -3,9 +3,10 @@ import React, { useState } from 'react'
 
 function EmpresasForm() {
   const { loading, error, getEmpleados, createEmpresa, createRemuneracion, createDescuento, createAportacion, createBoletaPago } = useApi();
-  const [newEmpresa, setNewEmpresa] = useState<Omit<
-    MAE_Empresa,'ID_EMPRESA'>
+  const [newEmpresa, setNewEmpresa] = useState<
+    MAE_Empresa
   >({
+    ID_EMPRESA:"20",
     DIRECCION: "",
     RAZON_SOCIAL: "",
     RUBRO_EMPRESA: "",

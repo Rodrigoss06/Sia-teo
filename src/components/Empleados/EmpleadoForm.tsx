@@ -75,7 +75,7 @@ function EmpleadoForm() {
           }
         }
       >
-        <option value={""}></option>
+        <option value={""}>Seleccionar documento</option>
         {documentos?.map((documento: MAE_Tipo_Documento) => (
           <option
             key={documento.ID_TIPO}
@@ -140,7 +140,7 @@ function EmpleadoForm() {
           }))
         }
       >
-        <option value={""}></option>
+        <option value={""}>Seleccionar empresa</option>
         {empresas?.map((empresa: MAE_Empresa) => (
           <option
             key={empresa.ID_EMPRESA}

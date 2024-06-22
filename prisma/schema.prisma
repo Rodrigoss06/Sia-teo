@@ -10,24 +10,22 @@ datasource db {
 model MAE_Descuentos {
   ID_DESCUENTO               Int             @id @default(autoincrement())
   DESCRIPCION                String          @db.VarChar(100)
-  MONTO                      Decimal         @db.Decimal(10, 2)
+  MONTO                      Decimal?        @db.Decimal(10, 2)
   PORCENTAJE                 Int?
   ID_DESCUENTO_TRANSACCIONAL Int?
   TRS_Descuentos             TRS_Descuentos? @relation(fields: [ID_DESCUENTO_TRANSACCIONAL], references: [ID_DESCUENTO_TRANSACCIONAL], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model MAE_Empleado {
-  ID_EMPLEADO        Int                 @id @default(autoincrement())
-  ID_TIPO            Int?
-  NOMBRE             String              @db.VarChar(100)
-  APELLIDO           String              @db.VarChar(100)
-  FECHA_NACIMIENTO   DateTime            @db.Date
-  HIJOS              String              @db.VarChar(3)
-  DIRECCION          String              @db.VarChar(200)
-  FECHA_INGRESO      DateTime            @db.Date
-  ID_EMPRESA         String?             @db.VarChar(20)
-  MAE_Empresa        MAE_EMPRESA?        @relation(fields: [ID_EMPRESA], references: [ID_EMPRESA], onDelete: NoAction, onUpdate: NoAction, map: "MAE_EMPLEADO_ID_EMPRESA_fkey")
-  MAE_Tipo_Documento MAE_TIPO_DOCUMENTO? @relation(fields: [ID_TIPO], references: [ID_TIPO], onDelete: NoAction, onUpdate: NoAction, map: "MAE_EMPLEADO_ID_TIPO_fkey")
+  ID_EMPLEADO      Int      @id @default(autoincrement())
+  ID_TIPO          Int?
+  NOMBRE           String   @db.VarChar(100)
+  APELLIDO         String   @db.VarChar(100)
+  FECHA_NACIMIENTO DateTime @db.Date
+  HIJOS            String   @db.VarChar(3)
+  DIRECCION        String   @db.VarChar(200)
+  FECHA_INGRESO    DateTime @db.Date
+  ID_EMPRESA       String?  @db.VarChar(20)
 }
 
 model MAE_Empresa {
@@ -59,16 +57,15 @@ model TRS_Aportaciones {
 }
 
 model TRS_Boleta_Pago {
-  ID_BOLETA_PAGO          Int          @id @default(autoincrement())
-  FECHA                   DateTime     @db.Date
+  ID_BOLETA_PAGO          Int      @id @default(autoincrement())
+  FECHA                   DateTime @db.Date
   ID_EMPLEADO             Int
   DIAS_LABORADOS          Int
-  TOTAL_HORAS_LABORADAS   Decimal      @db.Decimal(10, 2)
-  HORAS_EXTRAS            Decimal?     @db.Decimal(10, 2)
+  TOTAL_HORAS_LABORADAS   Decimal  @db.Decimal(10, 2)
+  HORAS_EXTRAS            Decimal? @db.Decimal(10, 2)
   DIAS_NO_LABORADOS       Int?
-  NETO_PAGAR              Decimal      @db.Decimal(10, 2)
+  NETO_PAGAR              Decimal  @db.Decimal(10, 2)
   ID_BOLETA_PAGO_DETALLES Int?
-  MAE_Empleado            MAE_EMPLEADO @relation(fields: [ID_EMPLEADO], references: [ID_EMPLEADO], onDelete: NoAction, onUpdate: NoAction, map: "TRS_BOLETA_PAGO_ID_EMPLEADO_fkey")
 }
 
 model TRS_Boleta_Pago_Detalle {
@@ -93,43 +90,4 @@ model TRS_Remuneraciones {
   TOTAL                         Decimal                   @db.Decimal(10, 2)
   MAE_Remuneraciones            MAE_Remuneraciones[]
   TRS_Boleta_Pago_Detalle       TRS_Boleta_Pago_Detalle[]
-}
-
-model MAE_EMPLEADO {
-  ID_EMPLEADO        Int                 @id(map: "MAE_EMPLEADO_pkey1") @default(autoincrement())
-  ID_TIPO            Int?
-  NOMBRE             String              @db.VarChar(100)
-  APELLIDO           String              @db.VarChar(100)
-  FECHA_NACIMIENTO   DateTime            @db.Date
-  HIJOS              String              @db.VarChar(3)
-  DIRECCION          String              @db.VarChar(200)
-  FECHA_INGRESO      DateTime            @db.Date
-  ID_EMPRESA         String?             @db.VarChar(20)
-  MAE_EMPRESA        MAE_EMPRESA?        @relation(fields: [ID_EMPRESA], references: [ID_EMPRESA], onDelete: NoAction, onUpdate: NoAction, map: "MAE_EMPLEADO_ID_EMPRESA_fkey1")
-  MAE_TIPO_DOCUMENTO MAE_TIPO_DOCUMENTO? @relation(fields: [ID_TIPO], references: [ID_TIPO], onDelete: NoAction, onUpdate: NoAction, map: "MAE_EMPLEADO_ID_TIPO_fkey1")
-  TRS_Boleta_Pago    TRS_Boleta_Pago[]
-}
-
-model MAE_EMPRESA {
-  ID_EMPRESA    String         @id(map: "MAE_EMPRESA_pkey1") @db.VarChar(20)
-  RAZON_SOCIAL  String?        @db.VarChar(100)
-  RUBRO_EMPRESA String?        @db.VarChar(100)
-  DIRECCION     String?        @db.VarChar(200)
-  RUC           String?        @db.VarChar(11)
-  MAE_EMPLEADO  MAE_EMPLEADO[]
-  MAE_Empleado  MAE_Empleado[]
-}
-
-model MAE_REMUNERACIONES {
-  ID_REMUNERACIONES             Int     @id(map: "MAE_REMUNERACIONES_pkey1") @default(autoincrement())
-  DESCRIPCION                   String  @db.VarChar(100)
-  MONTO                         Decimal @db.Decimal(10, 2)
-  ID_REMUNERACION_TRANSACCIONAL Int?
-}
-
-model MAE_TIPO_DOCUMENTO {
-  ID_TIPO      Int            @id(map: "MAE_TIPO_DOCUMENTO_pkey1") @default(autoincrement())
-  DESCRIPCION  String?        @db.VarChar(100)
-  MAE_EMPLEADO MAE_EMPLEADO[]
-  MAE_Empleado MAE_Empleado[]
 }
