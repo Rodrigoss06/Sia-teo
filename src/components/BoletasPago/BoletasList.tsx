@@ -23,7 +23,7 @@ function BoletasList() {
         <p>Pago Neto</p>
       </div>
         {boletas.map((boleta)=>(
-          <div className='border bg-white text-black overflow-hidden'>
+          <div className='border bg-white text-black overflow-hidden' key={boleta.ID_BOLETA_PAGO}>
             <div className='grid grid-cols-[minmax(200px,_4fr)_minmax(50px,_1fr)_minmax(120px,_3fr)_minmax(100px,_2fr)]  gap-4 p-4'>
             <p>{boleta.ID_EMPLEADO}</p>
             <p>{boleta.FECHA.toString().slice(0,10)}</p>

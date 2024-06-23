@@ -70,7 +70,7 @@ function Page() {
           <h2 className="text-xl font-semibold mt-4">Boletas de Pago:</h2>
           <ul className="list-disc pl-5">
             {boletas.map((boleta) => (
-              <BoletaItem boleta={boleta}/>
+              <BoletaItem boleta={boleta} key={boleta.ID_BOLETA_PAGO}/>
             ))}
           </ul>
       </div>

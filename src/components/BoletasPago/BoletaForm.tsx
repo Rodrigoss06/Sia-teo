@@ -388,7 +388,7 @@ function BoletaForm() {
           }}>
             <option value="">Seleccionar remuneraciones</option>
             {MaeRemuneraciones.map((maeRemuneracion)=>(
-              <option value={JSON.stringify(maeRemuneracion)}>{maeRemuneracion.DESCRIPCION}: {maeRemuneracion.MONTO}</option>
+              <option value={JSON.stringify(maeRemuneracion)} key={maeRemuneracion.ID_REMUNERACIONES}>{maeRemuneracion.DESCRIPCION}: {maeRemuneracion.MONTO}</option>
             ))}
           </select>
         <button
@@ -428,7 +428,7 @@ function BoletaForm() {
           }}>
             <option value="">Seleccionar descuentos</option>
             {MaeDescuentos.map((maeDescuento)=>(
-              <option value={JSON.stringify(maeDescuento)}>{maeDescuento.DESCRIPCION}: {maeDescuento.MONTO}</option>
+              <option value={JSON.stringify(maeDescuento)} key={maeDescuento.ID_DESCUENTO}>{maeDescuento.DESCRIPCION}: {maeDescuento.MONTO}</option>
             ))}
           </select>
         <button

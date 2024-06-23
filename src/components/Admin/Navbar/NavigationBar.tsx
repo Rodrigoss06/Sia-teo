@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React, { useState } from "react";
 function Logo({ className }: { className: string }) {
   return (
@@ -35,11 +36,11 @@ function NavigationBar() {
   return (
     <section className="relative ">
       <div className=" grid grid-cols-[minmax(30px,_2fr)_minmax(220px,_2fr)] px-8 py-4 backdrop-blur bg-[#D9D9D9]">
-        <a href="/"><Logo className="w-12 h-12 mt-2" /></a>
+        <Link href="/"><Logo className="w-12 h-12 mt-2" /></Link>
         <div className="hidden md:flex md:justify-between md:items-center space-x-4 text-xl font-medium ">
-          <a href="/empresas/list" className="hover:text-blue-600">Empresas</a>
-          <a href="/" className="hover:text-blue-600">Empleados</a>
-          <a href="/boletas_de_pago/list" className="hover:text-blue-600">Boletas de Pago</a>
+          <Link href="/empresas/list" className="hover:text-blue-600">Empresas</Link>
+          <Link href="/" className="hover:text-blue-600">Empleados</Link>
+          <Link href="/boletas_de_pago/list" className="hover:text-blue-600">Boletas de Pago</Link>
           {/* <a href="/" className="hover:text-blue-600">Reportes</a> */}
           {/* <a href="/" className="hover:text-blue-600">Configuración</a> */}
           {/* <a href="/" className="hover:text-blue-600">Perfil del Administrador</a> */}
@@ -70,9 +71,9 @@ function NavigationBar() {
           &times;
         </button>
         <nav className="flex flex-col space-y-4">
-          <a href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Empresas</a>
-          <a href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Empleados</a>
-          <a href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Boletas de Pago</a>
+          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Empresas</Link>
+          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Empleados</Link>
+          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Boletas de Pago</Link>
           {/* <a href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Reportes</a> */}
           {/* <a href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Configuración</a> */}
           {/* <a href="/" onClick={() => setMenuOpen(false)} className="hover:text-blue-600">Perfil del Administrador</a> */}
