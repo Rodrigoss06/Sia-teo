@@ -95,12 +95,12 @@ function BoletaForm() {
   
   useEffect(() => {
     const fetchData = async () => {
-      const dataEmpleados = await getEmpleados("http://localhost:3000/api");
+      const dataEmpleados = await getEmpleados("https://sia-teo-8rns.vercel.app/api");
       setTrabajadores(dataEmpleados.empleados);
-      const dataRemuneraciones =await getMaeRemuneraciones("http://localhost:3000/api")
+      const dataRemuneraciones =await getMaeRemuneraciones("https://sia-teo-8rns.vercel.app/api")
       const maeRemuneracionesFilter = dataRemuneraciones.remuneraciones.filter((remuneracion:MAE_Remuneraciones)=>remuneracion.ID_REMUNERACION_TRANSACCIONAL ===null)
       setMaeRemuneraciones(maeRemuneracionesFilter)
-      const dataDescuentos = await getMaeDescuentos("http://localhost:3000/api")
+      const dataDescuentos = await getMaeDescuentos("https://sia-teo-8rns.vercel.app/api")
       const maeDescuentosFilter = dataDescuentos.descuentos.filter((descuento:MAE_Descuentos)=>descuento.ID_DESCUENTO_TRANSACCIONAL === null)
       setMaeDescuentos(maeDescuentosFilter)
     };
@@ -125,14 +125,14 @@ function BoletaForm() {
     e.preventDefault();
     try {
       // const newHorario = await createHorarioLaborado(
-      //   "http://localhost:3000/api",
+      //   "https://sia-teo-8rns.vercel.app/api",
       //   JSON.stringify(horario_Laborado)
       // );
       // console.log("Nuevo Horario:", newHorario);
   
       // if (!newHorario) throw new Error("No se pudo crear el horario");
   
-      const newTrsRemuneracion = await createRemuneracion("http://localhost:3000/api", JSON.stringify(trsRemuneraciones));
+      const newTrsRemuneracion = await createRemuneracion("https://sia-teo-8rns.vercel.app/api", JSON.stringify(trsRemuneraciones));
       const trsRemuneracionId = newTrsRemuneracion.remuneracion.ID_REMUNERACION_TRANSACCIONAL;
   
       const updatedRemuneraciones = remuneraciones.map((remuneracion) => ({
@@ -143,7 +143,7 @@ function BoletaForm() {
       const newMaeRemuneraciones = await Promise.all(
         updatedRemuneraciones.map((remuneracion) =>
           createMaeRemuneracion(
-            "http://localhost:3000/api",
+            "https://sia-teo-8rns.vercel.app/api",
             JSON.stringify(remuneracion)
           )
         )
@@ -151,7 +151,7 @@ function BoletaForm() {
   
       console.log('Nuevas remuneraciones MAE:', newMaeRemuneraciones);
   
-      const newDescuento = await createDescuento("http://localhost:3000/api", JSON.stringify(trsDescuentos));
+      const newDescuento = await createDescuento("https://sia-teo-8rns.vercel.app/api", JSON.stringify(trsDescuentos));
       const trsDescuentoId = newDescuento.descuento.ID_DESCUENTO_TRANSACCIONAL;
   
       const updateDescuentos = descuentos.map((descuento) => ({
@@ -161,14 +161,14 @@ function BoletaForm() {
   
       const newMaeDescuentos = await Promise.all(
         updateDescuentos.map((descuento) => createMaeDescuento(
-          "http://localhost:3000/api",
+          "https://sia-teo-8rns.vercel.app/api",
           JSON.stringify(descuento)
         ))
       );
       console.log('Nuevas descuentos MAE:', newMaeDescuentos);
   
       const newAportacion = await createAportacion(
-        "http://localhost:3000/api",
+        "https://sia-teo-8rns.vercel.app/api",
         JSON.stringify(aportaciones)
       );
       const trsAportacionesId = newAportacion.aportacion.ID_APORTACIONES;
@@ -182,7 +182,7 @@ function BoletaForm() {
       };
   
       const boletaPagoDetalle = await createBoletaPagoDetalle(
-        "http://localhost:3000/api",
+        "https://sia-teo-8rns.vercel.app/api",
         JSON.stringify(newBoletaPagoDetalle)
       );
       console.log(boletaPagoDetalle);
@@ -193,7 +193,7 @@ function BoletaForm() {
       };
       console.log(newBoletaPago);
       const boletaPagoCreated = await createBoletaPago(
-        "http://localhost:3000/api",
+        "https://sia-teo-8rns.vercel.app/api",
         JSON.stringify(newBoletaPago)
       );
   

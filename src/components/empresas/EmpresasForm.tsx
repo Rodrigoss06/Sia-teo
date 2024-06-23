@@ -17,7 +17,7 @@ function EmpresasForm() {
     e.preventDefault()
     try {
       console.log(newEmpresa);
-      const response = await createEmpresa("http://localhost:3000/api", JSON.stringify(newEmpresa))
+      const response = await createEmpresa("https://sia-teo-8rns.vercel.app/api", JSON.stringify(newEmpresa))
       console.log(response)
       console.log(response.empresa)
       setNewEmpresa((state) => ({

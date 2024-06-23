@@ -22,14 +22,14 @@ function Page() {
       }
 
       try {
-        const dataEmpleado = await getEmpleado("http://localhost:3000/api", String(id));
+        const dataEmpleado = await getEmpleado("https://sia-teo-8rns.vercel.app/api", String(id));
         if (dataEmpleado.empleado) {
           setEmpleado(dataEmpleado.empleado);
 
-          const dataEmpresa = await getEmpresa("http://localhost:3000/api", dataEmpleado.empleado.ID_EMPRESA!);
+          const dataEmpresa = await getEmpresa("https://sia-teo-8rns.vercel.app/api", dataEmpleado.empleado.ID_EMPRESA!);
           setEmpresa(dataEmpresa.empresa);
 
-          const dataBoletas = await getBoletasPago("http://localhost:3000/api");
+          const dataBoletas = await getBoletasPago("https://sia-teo-8rns.vercel.app/api");
           const filteredBoletas = dataBoletas.boletas_pagos.filter(
             (boleta: TRS_Boleta_Pago) => boleta.ID_EMPLEADO === dataEmpleado.empleado.ID_EMPLEADO
           );

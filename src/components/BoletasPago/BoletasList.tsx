@@ -7,7 +7,7 @@ function BoletasList() {
   const [boletas,setBoletas] = useState<TRS_Boleta_Pago[]>([])
   useEffect(()=>{
     const getDataBoletas = async()=>{
-      const dataBoletas = await getBoletasPago("http://localhost:3000/api")
+      const dataBoletas = await getBoletasPago("https://sia-teo-8rns.vercel.app/api")
       console.log(dataBoletas)
       setBoletas(dataBoletas.boletas_pagos)
     }

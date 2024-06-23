@@ -21,11 +21,11 @@ function EmpleadoForm() {
   const [error, setError] = useState<string | null>(null);
   useEffect(()=>{
     const getDataEmpresas = async()=>{
-      const data = await getEmpresas("http://localhost:3000/api")
+      const data = await getEmpresas("https://sia-teo-8rns.vercel.app/api")
       setEmpresas(data.empresas)
     }
     const getDataDocumentos = async()=>{
-      const data = await getDocumentos("http://localhost:3000/api")
+      const data = await getDocumentos("https://sia-teo-8rns.vercel.app/api")
       setDocumentos(data.documentos)
     }
     getDataEmpresas()

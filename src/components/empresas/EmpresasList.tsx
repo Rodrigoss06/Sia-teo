@@ -7,7 +7,7 @@ function EmpresasList() {
     const [empresas,setEmpresas]= useState<MAE_Empresa[]>([])
     useEffect(()=>{
         const getDataEmpresas=async()=>{
-            const dataEmpresas = await getEmpresas("http://localhost:3000/api")
+            const dataEmpresas = await getEmpresas("https://sia-teo-8rns.vercel.app/api")
             console.log(dataEmpresas)
             setEmpresas(dataEmpresas.empresas)
         }
