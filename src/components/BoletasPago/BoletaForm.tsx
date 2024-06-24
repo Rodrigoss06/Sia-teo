@@ -1,5 +1,13 @@
 import useApi from "@/hooks/useApi";
 import React, { useEffect, useState } from "react";
+import { formatDate } from "../Empleados/EmpleadoForm";
+
+const formatMonth = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+};
+
 type Remuneracion = Omit<MAE_Remuneraciones, "ID_REMUNERACIONES"> & {
   ID_REMUNERACION_TRANSACCIONAL: number;
 };
@@ -113,16 +121,21 @@ function BoletaForm() {
       (acumulador, currentValue) => acumulador + currentValue.MONTO,
       0
     );
-    console.log(remuneraciones_total);
     const descuento_total = descuentos.reduce((acumulador, currentValue) => {
       const descuento = currentValue.PORCENTAJE;
       if (descuento !== 0 && descuento !== null && descuento != undefined) {
+        const descuento_total = (descuento / 100) * remuneraciones_total
         return (
-          acumulador + (currentValue.PORCENTAJE! / 100) * remuneraciones_total
+          acumulador + descuento_total
         );
       }
       return acumulador + currentValue.MONTO;
     }, 0);
+    const descuentosfilter = descuentos.map((descuento)=>{
+      const descuentofilter= {...descuento,MONTO:descuento_total}
+      return descuentofilter
+    })
+    setDescuentos(descuentosfilter)
     const pago_neto = remuneraciones_total - descuento_total;
     setBoletaPago((state) => ({ ...state, NETO_PAGAR: pago_neto }));
   }, [remuneraciones, descuentos]);
@@ -130,14 +143,6 @@ function BoletaForm() {
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // const newHorario = await createHorarioLaborado(
-      //   "https://sia-teo-8rns.vercel.app/api",
-      //   JSON.stringify(horario_Laborado)
-      // );
-      // console.log("Nuevo Horario:", newHorario);
-
-      // if (!newHorario) throw new Error("No se pudo crear el horario");
-
       const newTrsRemuneracion = await createRemuneracion(
         "https://sia-teo-8rns.vercel.app/api",
         JSON.stringify(trsRemuneraciones)
@@ -224,7 +229,6 @@ function BoletaForm() {
       (selectMaeRemuneracion?.DESCRIPCION !== "",
       selectMaeRemuneracion?.MONTO !== 0)
     ) {
-      console.log(selectMaeRemuneracion);
       setRemuneraciones([...remuneraciones, selectMaeRemuneracion!]);
     }
   };
@@ -249,9 +253,8 @@ function BoletaForm() {
   // Funciones para manejar múltiples descuentos
   const handleAddDescuentoField = () => {
     if (
-      (selectMaeDescuento?.DESCRIPCION !== "", selectMaeDescuento?.MONTO !== 0)
+      (selectMaeDescuento?.DESCRIPCION !== "" )
     ) {
-      console.log(selectMaeDescuento);
       setDescuentos([...descuentos, selectMaeDescuento!]);
     }
   };
@@ -386,34 +389,34 @@ function BoletaForm() {
         <div className="col-span-2 flex flex-col">
           <label className="text-white">Mes</label>
           <input
-          type="month"
-          placeholder="Mes"
-          name="Mes"
-          className="rounded"
-          value={boletaPago.MES}
-          onChange={(e) =>
-            setBoletaPago((state) => ({
-              ...state,
-              MES: Number(e.target.value),
-            }))
-          }
-        />
+            type="month"
+            placeholder="Mes"
+            name="Mes"
+            className="rounded"
+            value={boletaPago.MES}
+            onChange={(e) =>
+              setBoletaPago((state) => ({
+                ...state,
+                MES: Number(e.target.value),
+              }))
+            }
+          />
         </div>
         <div className=" col-span-2 col-start-6 flex flex-col">
           <label className="text-white">Fecha</label>
           <input
-          type="date"
-          placeholder="Fecha"
-          name="Fecha"
-          className="rounded"
-          value={boletaPago.FECHA.toString().slice(0, 10)}
-          onChange={(e) =>
-            setBoletaPago((state) => ({
-              ...state,
-              FECHA: new Date(e.target.value),
-            }))
-          }
-        />
+            type="date"
+            placeholder="Fecha"
+            name="Fecha"
+            className="rounded"
+            value={formatDate(boletaPago.FECHA)}
+            onChange={(e) =>
+              setBoletaPago((state) => ({
+                ...state,
+                FECHA: new Date(e.target.value),
+              }))
+            }
+          />
         </div>
       </div>
       <div
@@ -442,14 +445,12 @@ function BoletaForm() {
             id="maeremuneraciones"
             onChange={(e) => {
               if (e.target.value !== "") {
-                console.log(e.target.value);
                 setSelectMaeRemuneracion({
                   ID_REMUNERACION_TRANSACCIONAL: 0,
                   DESCRIPCION: JSON.parse(e.target.value).DESCRIPCION,
                   MONTO: Number(JSON.parse(e.target.value).MONTO),
                 });
               } else {
-                console.log(e.target.value);
                 setSelectMaeRemuneracion({
                   ID_REMUNERACION_TRANSACCIONAL: 0,
                   DESCRIPCION: "",
@@ -464,7 +465,7 @@ function BoletaForm() {
                 value={JSON.stringify(maeRemuneracion)}
                 key={maeRemuneracion.ID_REMUNERACIONES}
               >
-                {maeRemuneracion.DESCRIPCION}: {maeRemuneracion.MONTO}
+                {maeRemuneracion.DESCRIPCION}: S./{maeRemuneracion.MONTO}
               </option>
             ))}
           </select>
@@ -484,7 +485,8 @@ function BoletaForm() {
         {descuentos.map((descuento, index) => (
           <div key={index} className="flex flex-col justify-around text-white">
             <p>
-              {descuento.DESCRIPCION}: {descuento.MONTO}
+              {descuento.DESCRIPCION}:{" "}
+              {descuento.PORCENTAJE ? String(descuento.PORCENTAJE)+"%" : "S./"+String(descuento.MONTO)}
             </p>
             {descuentos.length > 1 && (
               <button
@@ -502,16 +504,13 @@ function BoletaForm() {
             id="maedescuentos"
             onChange={(e) => {
               if (e.target.value !== "") {
-                console.log(e.target.value);
-
                 setSelectMaeDescuento({
                   ID_DESCUENTO_TRANSACCIONAL: 0,
                   DESCRIPCION: JSON.parse(e.target.value).DESCRIPCION,
-                  MONTO: Number(JSON.parse(e.target.value).MONTO),
+                  MONTO: JSON.parse(e.target.value).MONTO === null? 0 : Number(JSON.parse(e.target.value).MONTO),
+                  PORCENTAJE:Number(JSON.parse(e.target.value).PORCENTAJE)
                 });
               } else {
-                console.log(e.target.value);
-
                 setSelectMaeDescuento({
                   ID_DESCUENTO_TRANSACCIONAL: 0,
                   DESCRIPCION: "",
@@ -527,9 +526,7 @@ function BoletaForm() {
                 key={maeDescuento.ID_DESCUENTO}
               >
                 {maeDescuento.DESCRIPCION}:{" "}
-                {maeDescuento.PORCENTAJE
-                  ? maeDescuento.PORCENTAJE
-                  : maeDescuento.MONTO}
+                {maeDescuento.PORCENTAJE ? "%"+String(maeDescuento.PORCENTAJE) : "S./"+String(maeDescuento.MONTO)}
               </option>
             ))}
           </select>

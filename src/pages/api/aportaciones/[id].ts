@@ -13,9 +13,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
     if (req.method === "GET") {
-        console.log(req.query)
         const { id } = req.query
-        console.log(id)
         const aportaciones = await prisma.tRS_Aportaciones.findFirst({where:{
             ID_APORTACIONES: Number(id)
         }})
@@ -23,9 +21,7 @@ export default async function handler(
         res.status(200).json({message:"get aportaciones", aportaciones:aportaciones!})
 
     } else if (req.method === "DELETE") {
-      console.log(req.query)
       const { id } = req.query
-      console.log(id)
       const aportaciones = await prisma.tRS_Aportaciones.delete ({where:{
           ID_APORTACIONES: Number(id)
       }})

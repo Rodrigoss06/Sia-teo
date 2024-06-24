@@ -13,7 +13,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-    console.log(1)
     switch (req.method) {
         case "GET":
             try {
@@ -27,7 +26,6 @@ export default async function handler(
             break;
         case "POST":
             try {
-                console.log(3)
                 console.log(req.body.data)
                 const aportacion = JSON.parse(req.body.data)
                 console.log(aportacion)
@@ -41,7 +39,6 @@ export default async function handler(
             break;
         case "PUT":
             try {
-                console.log(4)
                 res.status(200).json({message:"PUT aportaciones"})
             } catch (error) {
                 res.status(500).json({error:"Error fetching aportaciones"})
@@ -49,7 +46,6 @@ export default async function handler(
             break;
         case "DELETE":
             try {
-                console.log(6)
                 res.status(200).json({message:"DELETE aportaciones"})
             } catch (error) {
                 res.status(500).json({error:"Error fetching aportaciones"})
@@ -57,7 +53,6 @@ export default async function handler(
             break;
     
         default:
-            console.log(5)
             break;
     }
 }

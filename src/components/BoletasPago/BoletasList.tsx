@@ -2,14 +2,18 @@ import useApi from '@/hooks/useApi'
 import React, { useEffect, useState } from 'react'
 import BoletaItem from './BoletaItem'
 
+
 function BoletasList() {
-  const {getBoletasPago, getBoletaPagoDetalle, getMaeDescuentos,getMaeRemuneraciones,deleteBoletaPago,deleteBoletaPagoDetalle,deleteAportacion,deleteDescuento,deleteMaeDescuento,deleteRemuneracion,deleteMaeRemuneracion} = useApi()
+  const {getBoletasPago,getEmpleados, getBoletaPagoDetalle, getMaeDescuentos,getMaeRemuneraciones,deleteBoletaPago,deleteBoletaPagoDetalle,deleteAportacion,deleteDescuento,deleteMaeDescuento,deleteRemuneracion,deleteMaeRemuneracion} = useApi()
   const [boletas,setBoletas] = useState<TRS_Boleta_Pago[]>([])
+  const [empleados,setEmpleados] = useState<MAE_Empleado[]>()
+
   useEffect(()=>{
     const getDataBoletas = async()=>{
       const dataBoletas = await getBoletasPago("https://sia-teo-8rns.vercel.app/api")
-      console.log(dataBoletas)
       setBoletas(dataBoletas.boletas_pagos)
+      const dataEmpleados = await getEmpleados("https://sia-teo-8rns.vercel.app/api")
+      setEmpleados(dataEmpleados.empleados)
     }
     getDataBoletas()
   },[])
@@ -44,7 +48,7 @@ function BoletasList() {
         {boletas.map((boleta)=>(
           <div className='border bg-white text-black overflow-hidden' key={boleta.ID_BOLETA_PAGO}>
             <div className='grid grid-cols-[minmax(200px,_4fr)_minmax(50px,_1fr)_minmax(120px,_3fr)_minmax(100px,_2fr)_minmax(150px,_3fr)]  gap-4 p-4'>
-            <p>{boleta.ID_EMPLEADO}</p>
+            <p>{empleados?.filter((empleado)=>empleado.ID_EMPLEADO === boleta.ID_EMPLEADO)[0].NOMBRE + " " +empleados?.filter((empleado)=>empleado.ID_EMPLEADO === boleta.ID_EMPLEADO)[0].APELLIDO}</p>
             <p>{boleta.FECHA.toString().slice(0,10)}</p>
             <p>{boleta.DIAS_LABORADOS}</p>
             <p>{boleta.NETO_PAGAR}</p>
