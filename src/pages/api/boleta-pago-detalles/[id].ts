@@ -22,6 +22,15 @@ export default async function handler(
         console.log(boleta_pago)
         res.status(200).json({message:"get boleta_pago", boleta_pago:boleta_pago!})
 
+    }else if (req.method === "DELETE") {
+      console.log(req.query)
+        const { id } = req.query
+        console.log(id)
+        const boleta_pago = await prisma.tRS_Boleta_Pago_Detalle.delete({where:{
+            ID_BOLETA_PAGO_DETALLE: Number(id)
+        }})
+        console.log(boleta_pago)
+        res.status(200).json({message:"get boleta_pago", boleta_pago:boleta_pago!})
     }
 }
 

@@ -22,6 +22,16 @@ export default async function handler(
         console.log(descuentos)
         res.status(200).json({message:"get descuentos", descuentos:descuentos!})
 
+    } else if (req.method === "DELETE") {
+      console.log(req.query)
+      const { id } = req.query
+      console.log(id)
+      const descuentos = await prisma.mAE_Descuentos.delete({where:{
+          ID_DESCUENTO: Number(id)
+      }})
+      console.log(descuentos)
+      res.status(200).json({message:"get descuentos", descuentos:descuentos!})
+      
     }
 }
 

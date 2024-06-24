@@ -1,6 +1,7 @@
 interface MAE_Empleado {
     ID_EMPLEADO: number;
     ID_TIPO: number;
+    DOCUMENTO:string;
     NOMBRE: string;
     APELLIDO: string;
     FECHA_NACIMIENTO: Date;
@@ -12,6 +13,7 @@ interface MAE_Empleado {
 
 interface MAE_Empresa {
     ID_EMPRESA: string;
+    NOMBRE:string;
     RAZON_SOCIAL: string;
     RUBRO_EMPRESA: string;
     DIRECCION: string;
@@ -21,6 +23,7 @@ interface MAE_Empresa {
 interface TRS_Boleta_Pago {
     ID_BOLETA_PAGO: number;
     FECHA: Date;
+    MES:number;
     ID_EMPLEADO: number;
     DIAS_LABORADOS: number;
     TOTAL_HORAS_LABORADAS: number;

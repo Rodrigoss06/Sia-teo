@@ -3,34 +3,46 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 function EmpleadoForm() {
-  const { loading, getEmpresas,getDocumentos, createHorarioLaborado, createRemuneracion, createDescuento, createAportacion, createBoletaPago } = useApi();
+  const {
+    loading,
+    getEmpresas,
+    getDocumentos,
+    createHorarioLaborado,
+    createRemuneracion,
+    createDescuento,
+    createAportacion,
+    createBoletaPago,
+  } = useApi();
 
-  const [documentos,setDocumentos] = useState<MAE_Tipo_Documento[]>()
-  const [empresas,setEmpresas] = useState<MAE_Empresa[]>([])
-  const [newEmpleado, setNewEmpleado] = useState<Omit<MAE_Empleado, 'ID_EMPLEADO'>>({
-    FECHA_INGRESO:new Date(),
+  const [documentos, setDocumentos] = useState<MAE_Tipo_Documento[]>();
+  const [empresas, setEmpresas] = useState<MAE_Empresa[]>([]);
+  const [newEmpleado, setNewEmpleado] = useState<
+    Omit<MAE_Empleado, "ID_EMPLEADO">
+  >({
+    FECHA_INGRESO: new Date(),
     ID_TIPO: 0,
+    DOCUMENTO: "",
     ID_EMPRESA: "",
     NOMBRE: "",
     APELLIDO: "",
     FECHA_NACIMIENTO: new Date(),
     DIRECCION: "",
-    HIJOS:"si"
+    HIJOS: "si",
   });
 
   const [error, setError] = useState<string | null>(null);
-  useEffect(()=>{
-    const getDataEmpresas = async()=>{
-      const data = await getEmpresas("https://sia-teo-8rns.vercel.app/api")
-      setEmpresas(data.empresas)
-    }
-    const getDataDocumentos = async()=>{
-      const data = await getDocumentos("https://sia-teo-8rns.vercel.app/api")
-      setDocumentos(data.documentos)
-    }
-    getDataEmpresas()
-    getDataDocumentos()
-  },[])
+  useEffect(() => {
+    const getDataEmpresas = async () => {
+      const data = await getEmpresas("https://sia-teo-8rns.vercel.app/api");
+      setEmpresas(data.empresas);
+    };
+    const getDataDocumentos = async () => {
+      const data = await getDocumentos("https://sia-teo-8rns.vercel.app/api");
+      setDocumentos(data.documentos);
+    };
+    getDataEmpresas();
+    getDataDocumentos();
+  }, []);
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -39,20 +51,28 @@ function EmpleadoForm() {
       });
       console.log(response);
       setNewEmpleado({
-        FECHA_INGRESO:new Date(),
+        FECHA_INGRESO: new Date(),
         ID_TIPO: 0,
+        DOCUMENTO: "",
         ID_EMPRESA: "",
         NOMBRE: "",
         APELLIDO: "",
         FECHA_NACIMIENTO: new Date(),
         DIRECCION: "",
-        HIJOS:"si"
+        HIJOS: "no",
       });
       setError(null);
     } catch (error) {
       console.error("Error fetching empleados");
       setError("Ocurrió un error al agregar el empleado.");
     }
+  };
+
+  const formatDate = (date:Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
   return (
     <form onSubmit={handleOnSubmit} className="flex flex-col gap-y-3 ">
@@ -65,26 +85,31 @@ function EmpleadoForm() {
         id="Tipos_Documentos"
         className=" rounded text-lg grid col-span-2"
         required
-        onChange={(e) =>
-          {
-            console.log(e.target.value)
-            setNewEmpleado((state) => ({
-              ...state,
-              ID_TIPO: Number(e.target.value),
-            }))
-          }
-        }
+        onChange={(e) => {
+          console.log(e.target.value);
+          setNewEmpleado((state) => ({
+            ...state,
+            ID_TIPO: Number(e.target.value),
+          }));
+        }}
       >
         <option value={""}>Seleccionar documento</option>
         {documentos?.map((documento: MAE_Tipo_Documento) => (
-          <option
-            key={documento.ID_TIPO}
-            value={documento.ID_TIPO}
-          >
+          <option key={documento.ID_TIPO} value={documento.ID_TIPO}>
             {documento.DESCRIPCION}
           </option>
         ))}
       </select>
+      <input
+        className="p-2 rounded text-lg"
+        type="text"
+        maxLength={100}
+        placeholder="Documento"
+        value={newEmpleado.DOCUMENTO!}
+        onChange={(e) =>
+          setNewEmpleado((state) => ({ ...state, DOCUMENTO: e.target.value }))
+        }
+      />
       <input
         className="p-2 rounded text-lg"
         type="text"
@@ -105,18 +130,34 @@ function EmpleadoForm() {
           setNewEmpleado((state) => ({ ...state, APELLIDO: e.target.value }))
         }
       />
-      <input
-        className="p-2 rounded text-lg"
-        type="date"
-        placeholder="Fecha nacimiento"
-        value={newEmpleado.FECHA_NACIMIENTO?.toDateString()!}
-        onChange={(e) =>
-          setNewEmpleado((state) => ({
-            ...state,
-            FECHA_NACIMIENTO: new Date(e.target.value),
-          }))
-        }
-      />
+      <div className="flex text-white justify-between">
+        <label>Fecha ingreso:</label>
+        <input
+          className="p-2 rounded text-lg text-black"
+          type="date"
+          value={formatDate(newEmpleado.FECHA_INGRESO)}
+          onChange={(e) =>
+            setNewEmpleado((state) => ({
+              ...state,
+              FECHA_INGRESO: new Date(e.target.value),
+            }))
+          }
+        />
+      </div>
+      <div className="flex text-white justify-between">
+        <label>Fecha nacimiento:</label>
+        <input
+          className="p-2 rounded text-lg text-black"
+          type="date"
+          value={formatDate(newEmpleado.FECHA_NACIMIENTO)}
+          onChange={(e) =>
+            setNewEmpleado((state) => ({
+              ...state,
+              FECHA_NACIMIENTO: new Date(e.target.value),
+            }))
+          }
+        />
+      </div>
 
       <input
         className="p-2 rounded text-lg"
@@ -142,14 +183,34 @@ function EmpleadoForm() {
       >
         <option value={""}>Seleccionar empresa</option>
         {empresas?.map((empresa: MAE_Empresa) => (
-          <option
-            key={empresa.ID_EMPRESA}
-            value={empresa.ID_EMPRESA}
-          >
+          <option key={empresa.ID_EMPRESA} value={empresa.ID_EMPRESA}>
             {empresa.RUC + " " + empresa.RUBRO_EMPRESA}
           </option>
         ))}
       </select>
+      <div className=" flex justify-around rounded text-white  my-1">
+        <p>Hijos:</p>
+        <button
+          onClick={() => setNewEmpleado((state) => ({ ...state, HIJOS: "si" }))}
+          className={`w-full py-2 ${
+            newEmpleado.HIJOS === "si"
+              ? "bg-slate-500 text-white"
+              : "bg-transparent"
+          }`}
+        >
+          Si
+        </button>
+        <button
+          onClick={() => setNewEmpleado((state) => ({ ...state, HIJOS: "no" }))}
+          className={`w-full py-2 ${
+            newEmpleado.HIJOS === "no"
+              ? "bg-slate-500 text-white"
+              : "bg-transparent"
+          }`}
+        >
+          No
+        </button>
+      </div>
       <button className="rounded p-2 text-white bg-orange-400/70" type="submit">
         Agregar Empleado
       </button>

@@ -22,6 +22,15 @@ export default async function handler(
         console.log(aportaciones)
         res.status(200).json({message:"get aportaciones", aportaciones:aportaciones!})
 
+    } else if (req.method === "DELETE") {
+      console.log(req.query)
+      const { id } = req.query
+      console.log(id)
+      const aportaciones = await prisma.tRS_Aportaciones.delete ({where:{
+          ID_APORTACIONES: Number(id)
+      }})
+      console.log(aportaciones)
+      res.status(200).json({message:"get aportaciones", aportaciones:aportaciones!})
     }
 }
 

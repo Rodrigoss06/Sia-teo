@@ -6,13 +6,14 @@ import React, { useEffect, useState } from "react";
 
 function Page() {
   const [empleado, setEmpleado] = useState<MAE_Empleado | null>(null);
+  const [documento,setDocumento] = useState<MAE_Tipo_Documento>()
   const [empresa, setEmpresa] = useState<MAE_Empresa | null>(null);
   const [boletas, setBoletas] = useState<TRS_Boleta_Pago[]>([]);
   const [loading, setLoading] = useState(true);
   const [retry, setRetry] = useState(false);
   const router = useRouter();
   const { id } = router.query;
-  const { getEmpleado, getEmpresa, getBoletasPago } = useApi();
+  const { getEmpleado, getEmpresa, getBoletasPago, getDocumento } = useApi();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +35,8 @@ function Page() {
             (boleta: TRS_Boleta_Pago) => boleta.ID_EMPLEADO === dataEmpleado.empleado.ID_EMPLEADO
           );
           setBoletas(filteredBoletas);
+          const dataDocumento = await getDocumento("https://sia-teo-8rns.vercel.app/api",dataEmpleado.empleado.ID_TIPO!)
+          setDocumento(dataDocumento.documentos)
         }
         setLoading(false);
       } catch (error) {
@@ -63,9 +66,12 @@ function Page() {
           <h1 className="text-xl font-semibold">Datos:</h1>
         </div>
         <div className="p-4 mt-4 bg-gray-200 max-w-lg flex flex-col justify-start gap-y-3 rounded shadow-lg">
-          <p className="text-lg">DNI: {empleado.ID_TIPO}</p>
+          <p className="text-lg">{documento?.DESCRIPCION}: {empleado.DOCUMENTO}</p>
+          <p className="text-lg">Fecha de ingreso: {empleado.FECHA_INGRESO.toString().slice(0,10)}</p>
           <p className="text-lg">Fecha de nacimiento: {empleado.FECHA_NACIMIENTO.toString().slice(0,10)}</p>
-          <p className="text-lg">Empresa: {empresa?.RAZON_SOCIAL}</p>
+          <p className="text-lg">Empresa: {empresa?.NOMBRE}</p>
+          <p className="text-lg">Dirección: {empleado.DIRECCION}</p>
+          <p className="text-lg">Hijos: {empleado.HIJOS}</p>
         </div>
           <h2 className="text-xl font-semibold mt-4">Boletas de Pago:</h2>
           <ul className="list-disc pl-5">

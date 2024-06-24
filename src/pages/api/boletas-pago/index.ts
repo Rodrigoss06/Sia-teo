@@ -39,23 +39,6 @@ export default async function handler(
                 res.status(500).json({error:"Error fetching boletas de pago"})
             }
             break;
-        case "PUT":
-            try {
-                console.log(4)
-                res.status(200).json({message:"PUT boletas de pago"})
-            } catch (error) {
-                res.status(500).json({error:"Error fetching boletas de pago"})
-            }
-            break;
-        case "DELETE":
-            try {
-                console.log(6)
-                res.status(200).json({message:"DELETE boletas de pago"})
-            } catch (error) {
-                res.status(500).json({error:"Error fetching boletas de pago"})
-            }
-            break;
-    
         default:
             console.log(5)
             break;

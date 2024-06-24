@@ -34,7 +34,7 @@ function EmpleadosList() {
       <section className="bg-zinc-700 text-white">
         <span className="grid grid-cols-[minmax(200px,_4fr)_minmax(50px,_1fr)_minmax(120px,_3fr)_minmax(100px,_2fr)_minmax(150px,_3fr)]  gap-4 p-4 mt-2 ">
           <p>Nombre</p>
-          <p>DNI</p>
+          <p>Documento</p>
           <p>Dirección</p>
           <p>Fecha de nacimiento</p>
           <p>Opciones</p>

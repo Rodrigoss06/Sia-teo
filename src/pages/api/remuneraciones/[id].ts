@@ -22,6 +22,15 @@ export default async function handler(
         console.log(remuneraciones)
         res.status(200).json({message:"get remuneraciones", remuneraciones:remuneraciones!})
 
+    } else if (req.method === "DELETE") {
+        console.log(req.query)
+        const { id } = req.query
+        console.log(id)
+        const remuneraciones = await prisma.mAE_Remuneraciones.delete({where:{
+            ID_REMUNERACIONES: Number(id)
+        }})
+        console.log(remuneraciones)
+        res.status(200).json({message:"get remuneraciones", remuneraciones:remuneraciones!})
     }
 }
 
