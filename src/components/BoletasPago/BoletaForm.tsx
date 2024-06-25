@@ -17,7 +17,6 @@ function BoletaForm() {
     loading,
     error,
     getEmpleados,
-    createHorarioLaborado,
     getMaeDescuentos,
     getMaeRemuneraciones,
     createMaeRemuneracion,
@@ -30,15 +29,6 @@ function BoletaForm() {
   } = useApi();
 
   const [trabajadores, setTrabajadores] = useState<MAE_Empleado[]>();
-  // const [horario_Laborado, setHorario_Laborado] = useState<
-  //   Omit<MAE_Horario_Laborado, "PK_MAE_Horario_Laborado">
-  // >({
-  //   MES: 0,
-  //   DIAS_LABORADOS: 0,
-  //   HORAS_LABORADAS: 0,
-  //   HORAS_EXTRA: 0,
-  //   DIAS_NO_LABORADOS: 0,
-  // });
 
   const [trsRemuneraciones, setTrsRemuneraciones] = useState<
     Omit<TRS_Remuneraciones, "ID_REMUNERACION_TRANSACCIONAL">
@@ -72,7 +62,7 @@ function BoletaForm() {
   const [aportaciones, setAportaciones] = useState<
     Omit<TRS_Aportaciones, "ID_APORTACIONES">
   >({
-    ESSALUD: 1,
+    ESSALUD: 0,
     SCTR: 0,
   });
 
@@ -124,18 +114,12 @@ function BoletaForm() {
     const descuento_total = descuentos.reduce((acumulador, currentValue) => {
       const descuento = currentValue.PORCENTAJE;
       if (descuento !== 0 && descuento !== null && descuento != undefined) {
-        const descuento_total = (descuento / 100) * remuneraciones_total
-        return (
-          acumulador + descuento_total
-        );
+        const descuento_total = (descuento / 100) * remuneraciones_total;
+        return acumulador + descuento_total;
       }
       return acumulador + currentValue.MONTO;
     }, 0);
-    const descuentosfilter = descuentos.map((descuento)=>{
-      const descuentofilter= {...descuento,MONTO:descuento_total}
-      return descuentofilter
-    })
-    setDescuentos(descuentosfilter)
+
     const pago_neto = remuneraciones_total - descuento_total;
     setBoletaPago((state) => ({ ...state, NETO_PAGAR: pago_neto }));
   }, [remuneraciones, descuentos]);
@@ -171,7 +155,26 @@ function BoletaForm() {
         JSON.stringify(trsDescuentos)
       );
       const trsDescuentoId = newDescuento.descuento.ID_DESCUENTO_TRANSACCIONAL;
-
+      const remuneraciones_total = remuneraciones.reduce(
+        (acumulador, currentValue) => acumulador + currentValue.MONTO,
+        0
+      );
+      const descuento_total = descuentos.reduce((acumulador, currentValue) => {
+        const descuento = currentValue.PORCENTAJE;
+        if (descuento !== 0 && descuento !== null && descuento != undefined) {
+          const descuento_total = (descuento / 100) * remuneraciones_total;
+          return acumulador + descuento_total;
+        }
+        return acumulador + currentValue.MONTO;
+      }, 0);
+      const descuentosfilter = descuentos.map((descuento) => {
+        if (descuento.PORCENTAJE) {
+          const descuentofilter = { ...descuento, MONTO: descuento_total };
+          return descuentofilter;
+        }
+        return descuento;
+      });
+      setDescuentos(descuentosfilter);
       const updateDescuentos = descuentos.map((descuento) => ({
         ...descuento,
         ID_DESCUENTO_TRANSACCIONAL: trsDescuentoId,
@@ -252,9 +255,7 @@ function BoletaForm() {
 
   // Funciones para manejar múltiples descuentos
   const handleAddDescuentoField = () => {
-    if (
-      (selectMaeDescuento?.DESCRIPCION !== "" )
-    ) {
+    if (selectMaeDescuento?.DESCRIPCION !== "") {
       setDescuentos([...descuentos, selectMaeDescuento!]);
     }
   };
@@ -317,7 +318,9 @@ function BoletaForm() {
             name="dias_laborados"
             className="rounded"
             placeholder="DIAS LABORADOS"
-            value={boletaPago.DIAS_LABORADOS}
+            value={
+              boletaPago.DIAS_LABORADOS === 0 ? "" : boletaPago.DIAS_LABORADOS
+            }
             required
             onChange={(e) =>
               setBoletaPago((state) => ({
@@ -337,7 +340,11 @@ function BoletaForm() {
             name="horas_laborados"
             className="rounded"
             placeholder="HORAS LABORADAS"
-            value={boletaPago.TOTAL_HORAS_LABORADAS}
+            value={
+              boletaPago.TOTAL_HORAS_LABORADAS === 0
+                ? ""
+                : boletaPago.TOTAL_HORAS_LABORADAS
+            }
             onChange={(e) =>
               setBoletaPago((state) => ({
                 ...state,
@@ -356,7 +363,7 @@ function BoletaForm() {
             name="horas_extra"
             className="rounded"
             placeholder="HORAS EXTRA"
-            value={boletaPago.HORAS_EXTRAS}
+            value={boletaPago.HORAS_EXTRAS === 0 ? "" : boletaPago.HORAS_EXTRAS}
             onChange={(e) =>
               setBoletaPago((state) => ({
                 ...state,
@@ -375,7 +382,11 @@ function BoletaForm() {
             name="dias_no_laborados"
             className="rounded"
             placeholder="DIAS NO LABORADOS"
-            value={boletaPago.DIAS_NO_LABORADOS}
+            value={
+              boletaPago.DIAS_NO_LABORADOS === 0
+                ? ""
+                : boletaPago.DIAS_NO_LABORADOS
+            }
             onChange={(e) =>
               setBoletaPago((state) => ({
                 ...state,
@@ -386,7 +397,7 @@ function BoletaForm() {
         </div>
       </div>
       <div className="flex row-span-1 col-span-6 grid-cols-[repeat(6,minmax(150px,_1fr))]">
-        <div className="col-span-2 flex flex-col">
+        <div className="col-span-2 flex flex-col ">
           <label className="text-white">Mes</label>
           <input
             type="month"
@@ -423,22 +434,28 @@ function BoletaForm() {
         className="grid col-span-2 row-span-4 gap-4 grid-rows-[repeat(4,_minmax(70px,_1fr))]"
         id="remuneraciones"
       >
-        <h3 className="text-white row-span-3">Remuneraciones</h3>
-        {remuneraciones.map((remuneracion, index) => (
-          <div key={index} className="flex flex-col justify-around text-white">
-            <p>
-              {remuneracion.DESCRIPCION}: {remuneracion.MONTO}
-            </p>
-            {remuneraciones.length > 1 && (
-              <button
-                className=" p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
-                onClick={() => handleRemoveRemuneracionField(index)}
-              >
-                Eliminar
-              </button>
-            )}
-          </div>
-        ))}
+        <h3 className="text-white row-span-1">Remuneraciones</h3>
+        <div className="row-span-2">
+          {remuneraciones.map((remuneracion, index) => (
+            <div
+              key={index}
+              className="flex flex-col justify-around text-white"
+            >
+              <p>
+                {remuneracion.DESCRIPCION}: {remuneracion.MONTO}
+              </p>
+              {remuneraciones.length > 1 && (
+                <button
+                  type="button"
+                  className=" p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
+                  onClick={() => handleRemoveRemuneracionField(index)}
+                >
+                  Eliminar
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
         <div className="row-span-1 flex items-center">
           <select
             name="MaeRemuneraciones"
@@ -470,6 +487,7 @@ function BoletaForm() {
             ))}
           </select>
           <button
+            type="button"
             className="text-white p-2 bg-blue-400 hover:bg-blue-500 rounded"
             onClick={handleAddRemuneracionField}
           >
@@ -481,23 +499,31 @@ function BoletaForm() {
         className="grid col-span-2 row-span-4 gap-4 grid-rows-[repeat(4,_minmax(70px,_1fr))]"
         id="descuentos"
       >
-        <h3 className="text-white row-span-3">Descuentos</h3>
-        {descuentos.map((descuento, index) => (
-          <div key={index} className="flex flex-col justify-around text-white">
-            <p>
-              {descuento.DESCRIPCION}:{" "}
-              {descuento.PORCENTAJE ? String(descuento.PORCENTAJE)+"%" : "S./"+String(descuento.MONTO)}
-            </p>
-            {descuentos.length > 1 && (
-              <button
-                className=" p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
-                onClick={() => handleRemoveDescuentoField(index)}
-              >
-                Eliminar
-              </button>
-            )}
-          </div>
-        ))}
+        <h3 className="text-white row-span-1">Descuentos</h3>
+        <div className="row-span-2">
+          {descuentos.map((descuento, index) => (
+            <div
+              key={index}
+              className="flex flex-col justify-around text-white"
+            >
+              <p>
+                {descuento.DESCRIPCION}:{" "}
+                {descuento.PORCENTAJE
+                  ? String(descuento.PORCENTAJE) + "%"
+                  : "S./" + String(descuento.MONTO)}
+              </p>
+              {descuentos.length > 1 && (
+                <button
+                  type="button"
+                  className=" p-2 rounded bg-red-500 hover:bg-red-600 row-span-1"
+                  onClick={() => handleRemoveDescuentoField(index)}
+                >
+                  Eliminar
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
         <div className="flex items-center">
           <select
             name="MaeDescuentos"
@@ -507,8 +533,11 @@ function BoletaForm() {
                 setSelectMaeDescuento({
                   ID_DESCUENTO_TRANSACCIONAL: 0,
                   DESCRIPCION: JSON.parse(e.target.value).DESCRIPCION,
-                  MONTO: JSON.parse(e.target.value).MONTO === null? 0 : Number(JSON.parse(e.target.value).MONTO),
-                  PORCENTAJE:Number(JSON.parse(e.target.value).PORCENTAJE)
+                  MONTO:
+                    JSON.parse(e.target.value).MONTO === null
+                      ? 0
+                      : Number(JSON.parse(e.target.value).MONTO),
+                  PORCENTAJE: Number(JSON.parse(e.target.value).PORCENTAJE),
                 });
               } else {
                 setSelectMaeDescuento({
@@ -526,11 +555,14 @@ function BoletaForm() {
                 key={maeDescuento.ID_DESCUENTO}
               >
                 {maeDescuento.DESCRIPCION}:{" "}
-                {maeDescuento.PORCENTAJE ? "%"+String(maeDescuento.PORCENTAJE) : "S./"+String(maeDescuento.MONTO)}
+                {maeDescuento.PORCENTAJE
+                  ? "%" + String(maeDescuento.PORCENTAJE)
+                  : "S./" + String(maeDescuento.MONTO)}
               </option>
             ))}
           </select>
           <button
+            type="button"
             className="text-white p-2 max-w-48 max-h-12 bg-blue-400 hover:bg-blue-500 rounded"
             onClick={handleAddDescuentoField}
           >
@@ -545,7 +577,7 @@ function BoletaForm() {
           name="essalud"
           className="rounded max-h-10"
           placeholder="ESSALUD"
-          value={aportaciones.ESSALUD}
+          value={aportaciones.ESSALUD === 0 ? "" : aportaciones.ESSALUD}
           onChange={(e) =>
             setAportaciones((state) => ({
               ...state,
@@ -558,7 +590,7 @@ function BoletaForm() {
           name="sctr"
           className="rounded"
           placeholder="SCTR"
-          value={aportaciones.SCTR}
+          value={aportaciones.SCTR === 0 ? "" : aportaciones.SCTR}
           onChange={(e) =>
             setAportaciones((state) => ({
               ...state,

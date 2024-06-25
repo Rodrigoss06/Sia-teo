@@ -13,11 +13,6 @@ function EmpleadoForm() {
     loading,
     getEmpresas,
     getDocumentos,
-    createHorarioLaborado,
-    createRemuneracion,
-    createDescuento,
-    createAportacion,
-    createBoletaPago,
   } = useApi();
 
   const [documentos, setDocumentos] = useState<MAE_Tipo_Documento[]>();

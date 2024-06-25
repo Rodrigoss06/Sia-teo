@@ -109,13 +109,6 @@ interface ApiError {
   const updateBoletaPagoDetalle = (API_URL: string, id: string, detalle: any) => request('put', `${API_URL}/boleta-pago-detalles/${id}`, detalle);
   const deleteBoletaPagoDetalle = (API_URL: string, id: string) => request('delete', `${API_URL}/boleta-pago-detalles/${id}`);
 
-  // Horario Laborado
-  const getHorariosLaborados = (API_URL: string) => request('get', `${API_URL}/horario-laborado`);
-  const getHorarioLaborado = (API_URL: string, id: string) => request('get', `${API_URL}/horario-laborado/${id}`);
-  const createHorarioLaborado = (API_URL: string, horario: any) => request('post', `${API_URL}/horario-laborado`, horario);
-  const updateHorarioLaborado = (API_URL: string, id: string, horario: any) => request('put', `${API_URL}/horario-laborado/${id}`, horario);
-  const deleteHorarioLaborado = (API_URL: string, id: string) => request('delete', `${API_URL}/horario-laborado/${id}`);
-  
   return {
     loading,
     error,
@@ -169,11 +162,6 @@ interface ApiError {
     createBoletaPagoDetalle,
     updateBoletaPagoDetalle,
     deleteBoletaPagoDetalle,
-    getHorariosLaborados,
-    getHorarioLaborado,
-    createHorarioLaborado,
-    updateHorarioLaborado,
-    deleteHorarioLaborado
   };
 };
 
