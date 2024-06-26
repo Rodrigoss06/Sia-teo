@@ -76,11 +76,3 @@ interface MAE_Tipo_Documento {
     DESCRIPCION: string;
 }
 
-interface MAE_Horario_Laborado {
-    PK_MAE_Horario_Laborado: number;
-    MES: number;
-    DIAS_LABORADOS: number;
-    HORAS_LABORADAS: number;
-    DIAS_NO_LABORADOS: number;
-    HORAS_EXTRA: number;
-}

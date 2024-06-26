@@ -5,6 +5,7 @@ import ModalAgregarEmpleado from "../modals/ModalAgregarEmpleado";
 import EmpleadoForm from "./EmpleadoForm";
 import ModalAgregarEmpresa from "../modals/ModalAgregarEmpresa";
 import EmpresasForm from "../Empresas/EmpresasForm";
+import Link from "next/link";
 
 function EmpleadosList() {
   const [empleados, setEmpleados] = useState([]);
@@ -30,6 +31,11 @@ function EmpleadosList() {
         <h1 className="text-2xl font-semibold m-4">Lista de Empleados:</h1>
         <button className="bg-orange-400 rounded-2xl p-2 mt-4 mr-8" onClick={()=>setShowModalEmpleado(!showModalEmpleado)}>Agregar empleado</button>
         <button className="bg-orange-400 rounded-2xl p-2 mt-4 mr-8" onClick={()=>setShowModalEmpresa(!showModalEmpresa)}>Agregar empresa</button>
+        <button
+            className="bg-blue-500 hover:bg-blue-700 text-white rounded-2xl  mt-4 mr-8 py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <Link href="/boletas_de_pago/form">Boleta de Pago</Link>
+          </button>
       </span>
       <section className="bg-zinc-700 text-white">
         <span className="grid grid-cols-[minmax(200px,_4fr)_minmax(50px,_1fr)_minmax(120px,_3fr)_minmax(100px,_2fr)_minmax(150px,_3fr)]  gap-4 p-4 mt-2 ">
@@ -37,7 +43,7 @@ function EmpleadosList() {
           <p>Documento</p>
           <p>Dirección</p>
           <p>Fecha de nacimiento</p>
-          <p>Opciones</p>
+          <p>Fecha de ingreso</p>
         </span>
       {empleados.map((empleado: MAE_Empleado) => (
         <EmpleadoItem empleado={empleado} key={empleado.ID_EMPLEADO} />

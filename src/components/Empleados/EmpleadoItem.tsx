@@ -25,11 +25,7 @@ function EmpleadoItem({ empleado }: { empleado: MAE_Empleado }) {
         <div className="flex items-center col-span-1">{empleado.DIRECCION}</div>
         <div className="flex items-center col-span-1">{new Date(empleado.FECHA_NACIMIENTO).toLocaleDateString()}</div>
         <div className="flex items-center col-span-1">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <Link href="/boletas_de_pago/form">Boleta de Pago</Link>
-          </button>
+        {new Date(empleado.FECHA_INGRESO).toLocaleDateString()}
         </div>
       </div>
     </div>

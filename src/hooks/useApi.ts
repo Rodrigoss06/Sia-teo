@@ -5,41 +5,35 @@ interface ApiError {
     status?: number;
   }
   
-  const useApi = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<ApiError | null>(null);
+const useApi = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
   
-    // Wrapper to handle requests
-    const request = async (method: string, url: string, data?: any) => {
-      setLoading(true);
-      setError(null);
-      try {
-        console.log(method)
-        console.log(url)
-        console.log(data)
-        const response = await axios({ method, url, data:{
-          data:data
-        } });
-        setLoading(false);
-        return response.data;
-      } catch (err) {
-        setLoading(false);
-        if (axios.isAxiosError(err)) {
-          const axiosError = err as AxiosError;
-          setError({
-            message: axiosError.response?.data || axiosError.message,
-            status: axiosError.response?.status,
-          });
-        } else {
-          setError({
-            message: 'An unexpected error occurred',
-          });
-        }
-        throw err;
+  const request = async (method: string, url: string, data?: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios({ method, url, data:{data:data} });
+      setLoading(false);
+      return response.data;
+    } catch (err) {
+      setLoading(false);
+      if (axios.isAxiosError(err)) {
+        const axiosError = err as AxiosError;
+        setError({
+          message: axiosError.response?.data || axiosError.message,
+          status: axiosError.response?.status,
+        });
+      } else {
+        setError({
+          message: 'error axios',
+        });
       }
-    };
+      throw err;
+    }
+  };
 
-  // Empleados
+  // Documentos
   const getDocumentos = (API_URL:string) => request('get', `${API_URL}/tipo-documentos`);
   const getDocumento = (API_URL:string,id: string) => request('get', `${API_URL}/tipo-documentos/${id}`);
   const createDocumento = (API_URL:string,documento: any) => request('post', `${API_URL}/tipo-documentos`, documento);
@@ -53,7 +47,7 @@ interface ApiError {
   const updateEmpleado = (API_URL:string,id: string, empleado: any) => request('put', `${API_URL}/empleados/${id}`, empleado);
   const deleteEmpleado = (API_URL:string,id: string) => request('delete', `${API_URL}/empleados/${id}`);
 
-  // Empleados
+  // Empresas
   const getEmpresas = (API_URL:string) => request('get', `${API_URL}/empresas`);
   const getEmpresa = (API_URL:string,id: string) => request('get', `${API_URL}/empresas/${id}`);
   const createEmpresa = (API_URL:string,empresa: any) => request('post', `${API_URL}/empresas`, empresa);
@@ -88,12 +82,12 @@ interface ApiError {
   const updateDescuento = (API_URL:string,id: string, descuento: any) => request('put', `${API_URL}/descuentos/${id}`, descuento);
   const deleteDescuento = (API_URL:string,id: string) => request('delete', `${API_URL}/descuentos/${id}`);
 
-      // MAE Descuentos
-      const getMaeDescuentos = (API_URL: string) => request('get', `${API_URL}/mae-descuentos`);
-      const getMaeDescuento = (API_URL: string, id: string) => request('get', `${API_URL}/mae-descuentos/${id}`);
-      const createMaeDescuento = (API_URL: string, maeDescuento: any) => request('post', `${API_URL}/mae-descuentos`, maeDescuento);
-      const updateMaeDescuento = (API_URL: string, id: string, maeDescuento: any) => request('put', `${API_URL}/mae-descuentos/${id}`, maeDescuento);
-      const deleteMaeDescuento = (API_URL: string, id: string) => request('delete', `${API_URL}/mae-descuentos/${id}`);
+  // MAE Descuentos
+  const getMaeDescuentos = (API_URL: string) => request('get', `${API_URL}/mae-descuentos`);
+  const getMaeDescuento = (API_URL: string, id: string) => request('get', `${API_URL}/mae-descuentos/${id}`);
+  const createMaeDescuento = (API_URL: string, maeDescuento: any) => request('post', `${API_URL}/mae-descuentos`, maeDescuento);
+  const updateMaeDescuento = (API_URL: string, id: string, maeDescuento: any) => request('put', `${API_URL}/mae-descuentos/${id}`, maeDescuento);
+  const deleteMaeDescuento = (API_URL: string, id: string) => request('delete', `${API_URL}/mae-descuentos/${id}`);
 
   // Aportaciones
   const getAportaciones = (API_URL:string) => request('get', `${API_URL}/aportaciones`);
@@ -110,23 +104,10 @@ interface ApiError {
   const deleteBoletaPagoDetalle = (API_URL: string, id: string) => request('delete', `${API_URL}/boleta-pago-detalles/${id}`);
 
   return {
-    loading,
-    error,
-    getEmpleados,
-    getEmpleado,
-    createEmpleado,
-    updateEmpleado,
-    deleteEmpleado,
-    getDocumentos,
-    getDocumento,
-    createDocumento,
-    updateDocumento,
-    deleteDocumento,
-    getEmpresas,
-    getEmpresa,
-    createEmpresa,
-    updateEmpresa,
-    deleteEmpresa,
+    loading, error, 
+    getEmpleados, getEmpleado, createEmpleado, updateEmpleado, deleteEmpleado,
+    getDocumentos, getDocumento, createDocumento, updateDocumento, deleteDocumento,
+    getEmpresas, getEmpresa, createEmpresa, updateEmpresa, deleteEmpresa,
     getBoletasPago,
     getBoletaPago,
     createBoletaPago,

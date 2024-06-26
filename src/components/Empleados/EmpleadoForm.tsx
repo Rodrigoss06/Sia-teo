@@ -2,18 +2,14 @@ import useApi from "@/hooks/useApi";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-export const formatDate = (date:Date) => {
+export const formatDate = (date: Date) => {
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 function EmpleadoForm() {
-  const {
-    loading,
-    getEmpresas,
-    getDocumentos,
-  } = useApi();
+  const { loading, getEmpresas, getDocumentos } = useApi();
 
   const [documentos, setDocumentos] = useState<MAE_Tipo_Documento[]>();
   const [empresas, setEmpresas] = useState<MAE_Empresa[]>([]);
@@ -98,6 +94,7 @@ function EmpleadoForm() {
       <input
         className="p-2 rounded text-lg"
         type="text"
+        required
         maxLength={100}
         placeholder="Documento"
         value={newEmpleado.DOCUMENTO!}
@@ -109,6 +106,7 @@ function EmpleadoForm() {
         className="p-2 rounded text-lg"
         type="text"
         maxLength={100}
+        required
         placeholder="Nombres"
         value={newEmpleado.NOMBRE!}
         onChange={(e) =>
@@ -131,12 +129,22 @@ function EmpleadoForm() {
           className="p-2 rounded text-lg text-black"
           type="date"
           value={formatDate(newEmpleado.FECHA_INGRESO)}
-          onChange={(e) =>
-            setNewEmpleado((state) => ({
-              ...state,
-              FECHA_INGRESO: new Date(e.target.value),
-            }))
-          }
+          onChange={(e) => {
+            const selectedDate = new Date(e.target.value);
+            const currentDate = new Date();
+
+            if (selectedDate >= currentDate) {
+              setError(
+                "La fecha de ingreso debe ser anterior a la fecha actual."
+              );
+            } else {
+              setError("");
+              setNewEmpleado((state) => ({
+                ...state,
+                FECHA_INGRESO: selectedDate,
+              }));
+            }
+          }}
         />
       </div>
       <div className="flex text-white justify-between">
@@ -145,12 +153,21 @@ function EmpleadoForm() {
           className="p-2 rounded text-lg text-black"
           type="date"
           value={formatDate(newEmpleado.FECHA_NACIMIENTO)}
-          onChange={(e) =>
-            setNewEmpleado((state) => ({
-              ...state,
-              FECHA_NACIMIENTO: new Date(e.target.value),
-            }))
-          }
+          onChange={(e) => {
+            const selectedDate = new Date(e.target.value);
+            const currentDate = new Date();
+            if (selectedDate >= currentDate) {
+              setError(
+                "La fecha de ingreso debe ser anterior a la fecha actual."
+              );
+            } else {
+              setError("");
+              setNewEmpleado((state) => ({
+                ...state,
+                FECHA_NACIMIENTO: selectedDate,
+              }));
+            }
+          }}
         />
       </div>
 

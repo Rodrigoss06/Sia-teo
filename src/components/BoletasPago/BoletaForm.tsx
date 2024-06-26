@@ -27,7 +27,7 @@ function BoletaForm() {
     createBoletaPago,
     createBoletaPagoDetalle,
   } = useApi();
-
+  const [errorInput, setErrorInput] = useState<string | null>(null);
   const [trabajadores, setTrabajadores] = useState<MAE_Empleado[]>();
 
   const [trsRemuneraciones, setTrsRemuneraciones] = useState<
@@ -322,12 +322,16 @@ function BoletaForm() {
               boletaPago.DIAS_LABORADOS === 0 ? "" : boletaPago.DIAS_LABORADOS
             }
             required
-            onChange={(e) =>
-              setBoletaPago((state) => ({
-                ...state,
-                DIAS_LABORADOS: Number(e.target.value),
-              }))
-            }
+            onChange={(e) => {
+              if (Number(e.target.value) >= 0) {
+                setBoletaPago((state) => ({
+                  ...state,
+                  DIAS_LABORADOS: Number(e.target.value),
+                }));
+              } else {
+                setErrorInput("Los dias laborados deben ser mayor o igual a 0");
+              }
+            }}
           />
         </div>
         <div className="flex flex-col col-span-1">
@@ -345,12 +349,18 @@ function BoletaForm() {
                 ? ""
                 : boletaPago.TOTAL_HORAS_LABORADAS
             }
-            onChange={(e) =>
-              setBoletaPago((state) => ({
-                ...state,
-                TOTAL_HORAS_LABORADAS: Number(e.target.value),
-              }))
-            }
+            onChange={(e) => {
+              if (Number(e.target.value) >= 0) {
+                setBoletaPago((state) => ({
+                  ...state,
+                  TOTAL_HORAS_LABORADAS: Number(e.target.value),
+                }));
+              } else {
+                setErrorInput(
+                  "Las horas laborados deben ser mayor o igual a 0"
+                );
+              }
+            }}
           />
         </div>
         <div className="flex flex-col col-span-1">
@@ -364,12 +374,16 @@ function BoletaForm() {
             className="rounded"
             placeholder="HORAS EXTRA"
             value={boletaPago.HORAS_EXTRAS === 0 ? "" : boletaPago.HORAS_EXTRAS}
-            onChange={(e) =>
-              setBoletaPago((state) => ({
-                ...state,
-                HORAS_EXTRAS: Number(e.target.value),
-              }))
-            }
+            onChange={(e) => {
+              if (Number(e.target.value) >= 0) {
+                setBoletaPago((state) => ({
+                  ...state,
+                  HORAS_EXTRAS: Number(e.target.value),
+                }));
+              } else {
+                setErrorInput("Las horas extras deben ser mayor o igual a 0");
+              }
+            }}
           />
         </div>
         <div className="flex flex-col col-span-1">
@@ -387,12 +401,18 @@ function BoletaForm() {
                 ? ""
                 : boletaPago.DIAS_NO_LABORADOS
             }
-            onChange={(e) =>
-              setBoletaPago((state) => ({
-                ...state,
-                DIAS_NO_LABORADOS: Number(e.target.value),
-              }))
-            }
+            onChange={(e) => {
+              if (Number(e.target.value)) {
+                setBoletaPago((state) => ({
+                  ...state,
+                  DIAS_NO_LABORADOS: Number(e.target.value),
+                }));
+              } else {
+                setErrorInput(
+                  "Los dias no laborados deben ser mayor o igual a 0"
+                );
+              }
+            }}
           />
         </div>
       </div>
@@ -405,12 +425,20 @@ function BoletaForm() {
             name="Mes"
             className="rounded"
             value={boletaPago.MES}
-            onChange={(e) =>
-              setBoletaPago((state) => ({
-                ...state,
-                MES: Number(e.target.value),
-              }))
-            }
+            onChange={(e) => {
+              const selectedMonth = new Date(e.target.value);
+              const currentMonth = new Date();
+
+              if (selectedMonth >= currentMonth) {
+                setErrorInput("El mes debe ser anterior al mes actual.");
+              } else {
+                setErrorInput("");
+                setBoletaPago((state) => ({
+                  ...state,
+                  MES: 0,
+                }));
+              }
+            }}
           />
         </div>
         <div className=" col-span-2 col-start-6 flex flex-col">
@@ -421,12 +449,18 @@ function BoletaForm() {
             name="Fecha"
             className="rounded"
             value={formatDate(boletaPago.FECHA)}
-            onChange={(e) =>
-              setBoletaPago((state) => ({
-                ...state,
-                FECHA: new Date(e.target.value),
-              }))
-            }
+            onChange={(e) => {
+              const selectedDate = new Date(e.target.value);
+              const currentDate = new Date();
+              if (selectedDate >= currentDate) {
+                setErrorInput("La fecha debe ser anterior a la fecha actual");
+              } else {
+                setBoletaPago((state) => ({
+                  ...state,
+                  FECHA: new Date(e.target.value),
+                }));
+              }
+            }}
           />
         </div>
       </div>
@@ -578,12 +612,16 @@ function BoletaForm() {
           className="rounded max-h-10"
           placeholder="ESSALUD"
           value={aportaciones.ESSALUD === 0 ? "" : aportaciones.ESSALUD}
-          onChange={(e) =>
-            setAportaciones((state) => ({
-              ...state,
-              ESSALUD: Number(e.target.value),
-            }))
-          }
+          onChange={(e) => {
+            if (Number(e.target.value) >= 0) {
+              setAportaciones((state) => ({
+                ...state,
+                ESSALUD: Number(e.target.value),
+              }));
+            } else {
+              setErrorInput("La cantidad no puede ser inferio a 0");
+            }
+          }}
         />
         <input
           type="number"
@@ -591,12 +629,16 @@ function BoletaForm() {
           className="rounded"
           placeholder="SCTR"
           value={aportaciones.SCTR === 0 ? "" : aportaciones.SCTR}
-          onChange={(e) =>
-            setAportaciones((state) => ({
-              ...state,
-              SCTR: Number(e.target.value),
-            }))
-          }
+          onChange={(e) => {
+            if (Number(e.target.value) >= 0) {
+              setAportaciones((state) => ({
+                ...state,
+                SCTR: Number(e.target.value),
+              }));
+            } else {
+              setErrorInput("La cantidad no puede ser inferio a 0");
+            }
+          }}
         />
       </div>
       <button
